@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script src="https://npmcdn.com/js-alert/dist/jsalert.min.js"></script>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+        th, td {
+            padding: 10px;
+            border: 1px solid black;
+        }
+       
+    </style>
+    <title>Friends League --Admin</title>
+</head>
+<body>
+    
+
+    <nav class="navbar" style="background:#3b5998; position: fixed; z-index: 50; width: 100%">
+        <div class="container">
+            <header style="color:ivory; text-align: center"><h1>FRIENDS LEAGUE --Dashboard</h1></header>
+        </div>
+    </nav>
+
+    <div class="container" style="padding-top: 80px; overflow-x:auto;">
+        <table class="jumbotron" style="width: 100%;">
+            <caption><h2>Leaderboard</h2></caption>
+            <tr>
+                <th style="text-align: center">Rank</th>
+                <th style="text-align: center">User</th> 
+                <th style="text-align: center">Points</th>
+                <th style="text-align: center">Doubles Remaining</th>
+                <th style="text-align: center">Triples Remaining</th>
+                <th style="text-align: center">Superboosts Remaining</th>
+            </tr>
+            <% if(users.length == 0){ %> 
+                <tr><td colspan="6" style="text-align: center">No users signed up yet</td></tr>    
+            <% } %>
+            <% users.forEach(user => { %>
+                <% if(user.rank <= 10){ %> 
+                    <tr>
+                        <td style="text-align: center"><%= user.rank %></td>
+                        <td><img src="<%= user.avatar_url %>">&nbsp;<%= user.name %></td>
+                        <td style="text-align: center"><%= user.score %></td>
+                        <td style="text-align: center"><%= user.doubles_remaining %></td>
+                        <td style="text-align: center"><%= user.triples_remaining %></td>
+                        <td style="text-align: center"><%= user.superboosts_remaining %></td>
+                    </tr>
+                <% } %> 
+            <% }) %>
+        </table>
+    </div>
+    <div class="container">
+        <h2>Results Update</h2>
+        <% if(matches.length == 0){ %> 
+            <div>No matches to update</div>    
+        <% } %>
+        <% matches.forEach(match => { %> 
+            <form class="jumbotron" action="/admin/result/<%=match._id%>" method="POST">
+                <div class="form-group">
+                    <label>Select Winning Team&nbsp;</label>
+                    <label class="radio-inline" >
+                        <input type="radio" name="winner" value="<%= match.team1 %>"><%= match.team1 %>
+                    </label>
+                    <label>&nbsp;vs&nbsp;</label>
+                    <label class="radio-inline" >
+                        <input type="radio" name="winner" value="<%= match.team2 %>"><%= match.team2 %>
+                    </label>
+                    <label class="radio-inline" >
+                        <input type="radio" name="winner" value="No Result" checked>No Result
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>Select Man Of The Match</label>
+                    <select class="form-control" name="mom">
+                        <option value=""></option>
+                        <% squads.forEach(squad => { %>
+                            <% if(squad.name === match.team1 || squad.name === match.team2){ %>
+                                <% for(let player of squad.squad){ %> 
+                                    <option value="<%= player %>"><%=player %></option>
+                                <% } %>
+                            <% } %>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Enter first innings score</label>
+                    <input type="number" class="form-control" name="first_inns_score">
+                </div>
+                <button class="btn btn-primary" type="submit">Submit Results</button>
+            </form>    
+        <% }) %>
+    </div>
+    <div class="container">
+        <h2>Add Multipliers</h2>
+        <% if(users.length == 0){ %> 
+            <div>No user signed up yet</div>    
+        <% } else{ %>
+            <form class="jumbotron" action="/admin/multipliers" method="POST">
+                <div class="form-group">
+                    <label>Set number of doubles to add</label>
+                    <input type="number" class="form-control" name="doubles_added">
+                </div>
+                <div class="form-group">
+                    <label>Set number of triples to add</label>
+                    <input type="number" class="form-control" name="triples_added">
+                </div>
+                <div class="form-group">
+                    <label>Set number of superboosts to add</label>
+                    <input type="number" class="form-control" name="superboosts_added">
+                </div>
+                <button class="btn btn-primary" type="submit">Add Multipliers</button>
+            </form>
+        <% } %>
+    </div>
+    <div class="container">
+        <% if(!xl_uploaded){ %> 
+            <h2>Add roster file</h2>    
+        <%} else { %> 
+            <h2>Update roster file</h2>    
+        <% } %>
+         
+        <form class="jumbotron" action="/admin/upload-roster" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <input class="form-control-file" type="file" name="roster" required/>
+            </div>
+            <button class="btn btn-primary" type="submit">Upload Roster</button>   
+        </form> 
+    </div>
+</body>
+</html>
