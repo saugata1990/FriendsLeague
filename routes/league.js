@@ -32,7 +32,7 @@ league.get('/matches', isLoggedIn, (req, res) => {
                 }
                 if(!seen.includes(match.team2)){
                     const squad2 = teams.find(team => team.name === match.team2)
-                    squads.push({name: squad2.name, squad: squad2.squad})
+                    squads.push({name: squad2.name, squad: squad2.squad}) // or simply squads.push(squad2)
                     seen.push(match.team2)
                 }
             }

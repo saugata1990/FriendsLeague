@@ -99,7 +99,7 @@ admin.get('/dashboard', verifyToken(process.env.admin_secret_key), (req, res) =>
             }
         })
 
-        res.render('dashboard', {users, matches, squads, xl_uploaded})
+        res.render('dashboard', {users, matches, teams, squads, xl_uploaded})
     })
     .catch(error => res.render('error'))
 })
@@ -118,8 +118,11 @@ admin.post('/result/:match_id', verifyToken(process.env.admin_secret_key), (req,
             let points = 0
             let multiplier = 1
             const prediction = user.predictions.find(pred => pred.match_id == req.params.match_id)
-            if(!prediction && date.subtract(match.start_time, user.signup.timestamp).toMinutes() > 0 ){ 
+            if(!prediction && date.subtract(match.start_time, user.signup_timestamp).toMinutes() > 0 ){ 
                 user.score += parseInt(process.env.no_post_penalty)
+            }
+            else if(!prediction && date.subtract(match.start_time, user.signup_timestamp).toMinutes() < 0){
+                user.score += 0
             }
             else{
                 if(prediction.double_used) {
@@ -150,11 +153,46 @@ admin.post('/result/:match_id', verifyToken(process.env.admin_secret_key), (req,
         .then(() => res.redirect('/admin/dashboard'))
 
     })
-    .catch(error => res.render('error'))
+    .catch(error =>{
+        console.log('error ', error)
+        res.render('error')
+    })
 })
 
 admin.post('/bonus-results', verifyToken(process.env.admin_secret_key), (req, res) => {
-    // TODO
+    User.find().exec()
+    .then(users => {
+        const playoff_teams = req.body.playoff_teams.sort()
+        const winner = req.body.winner
+        const orange_cap_winner = req.body.orange_cap_winner
+        const purple_cap_winner = req.body.purple_cap_winner
+        users.forEach(user => {
+            user.competition_finished = true
+            let matches_found = 0
+            user.bonus_prediction.playoff_teams.sort()
+            for(let i=0; i < user.bonus_prediction.playoff_teams.length; i++){
+                if(user.bonus_prediction.playoff_teams[i] == playoff_teams[i]){
+                    matches_found++
+                }
+            }
+            if(matches_found >= 3){
+                user.score += process.env.playoff_teams_correct_points
+            }
+            if(user.bonus_prediction.orange_cap_winner == orange_cap_winner){
+                user.score += process.env.orange_cap_correct_points
+            }
+            if(user.bonus_prediction.purple_cap_winner == purple_cap_winner){
+                user.score += process.env.purple_cap_correct_points
+            }
+            if(user.bonus_prediction.winner == winner){
+                user.score += process.env.champion_correct_points
+            }
+            return user
+        })
+        users.map(user => user.save())   
+        .then(() => res.redirect('/admin/dashboard'))
+    })
+    .catch(error => res.render('error'))
 })
 
 

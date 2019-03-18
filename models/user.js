@@ -31,7 +31,8 @@ const userSchema = new Schema({
     score: {type: Number, default:  0}, 
     doubles_remaining: {type: Number, default: process.env.doubles},
     triples_remaining: {type: Number, default: process.env.triples},
-    superboosts_remaining: {type: Number, default: process.env.superboosts}
+    superboosts_remaining: {type: Number, default: process.env.superboosts},
+    competition_finished: {type: Boolean, default: false}
 })
 
 userSchema.plugin(findOrCreate)

@@ -69,14 +69,14 @@
                 </div>
                 <% let players=[] %>
                 <% squads.forEach(squad => { %> 
-                    <% players.push(...squad.squad) %>    
+                    <% players.push(...squad.squad) %>   
                 <% }) %>
                 <label>Predict Orange Cap winner</label>
                 <div class="form-group">
                     <input class="form-control" list="players" name="orange_cap_winner" required>
                     <datalist id="players">
                         <% for(let player of players){ %> 
-                            <option value="<%=player%>">   
+                            <option value="<%=player%>">  
                         <% } %>
                     </datalist>
                 </div>
@@ -116,7 +116,13 @@
         
         <% matches.forEach(match => { %>
             <% let date = new Date(match.start_time) %>
-            
+            <!-- <% let match_squads = [] %>
+            <% squads.forEach(squad => { %> 
+                <% if(match.team1 === squad.name || match.team2 === squad.name){ %> 
+                    <% match_squads.push(...squad.squad) %>    
+                <% } %>
+            <% }) %>  -->
+
             <form class="jumbotron" action="/league/prediction" method="POST">
                 <input type="hidden" name="match_id" value="<%= match._id %>">
                 <div class="form-group">
@@ -133,18 +139,12 @@
                     </label>
                 </div>
 
+                
                 <!-- <div class="form-group">
-                    <% let match_players = [] %>
-                    <% squads.forEach(squad => { %> 
-                        <% if(squad.name === match.team1 || squad.name === match.team2){ %> 
-                            <% match_players.push(...squad.squad) %>    
-                        <% } %>  
-                    <% }) %>
-                    <%=console.log(match_players)%>
                     <label>Predict Man Of The Match</label>
                     <input class="form-control" list="match_players" name="mom">
                     <datalist id="match_players">
-                        <% for(let player of match_players){ %> 
+                        <% for(let player of match_squads){ %> 
                             <option value="<%=player%>">
                         <% } %>
                     </datalist>

@@ -7,6 +7,15 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     <script src="https://npmcdn.com/js-alert/dist/jsalert.min.js"></script>
+    <script>
+        $(() => {
+            $('input:checkbox').click(event => {
+                let limit = 4
+                let bol = $("input:checkbox:checked").length >= limit;
+                $("input:checkbox").not(":checked").attr("disabled",bol)
+            })
+        })
+    </script>
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <style>
         th, td {
@@ -131,5 +140,51 @@
             <button class="btn btn-primary" type="submit">Upload Roster</button>   
         </form> 
     </div>
+    <% if(matches.length == 0 && users.length > 0 && !users[0].competition_finished){ %> 
+        <div class="container">
+            <h2>Assign Bonus Points</h2>
+            <form class="jumbotron" action="/admin/bonus-results" method="POST">
+                <label>Select the four teams that qualified for the playoffs</label>
+                <div class="form-group">
+                    <% for(let team of teams){ %> 
+                        <div class="form-control-checkbox">
+                            <input type="checkbox" name="playoff_teams[]" value="<%= team.name %>" required><%= team.name %>   
+                        </div> 
+                    <% } %>
+                </div>
+                <div class="form-group">
+                    <label>Select the Champion Team</label>
+                    <select class="form-control" name="winner">
+                        <% for(let team of teams){ %> 
+                            <option value="<%=team.name%>"><%=team.name%></option>    
+                        <% } %>
+                    </select>
+                </div>
+                <% let players=[] %>
+                <% teams.forEach(team => { %> 
+                    <% players.push(...team.squad) %>   
+                <% }) %>
+                <label>Select Orange Cap winner</label>
+                <div class="form-group">
+                    <input class="form-control" list="players" name="orange_cap_winner" required>
+                    <datalist id="players">
+                        <% for(let player of players){ %> 
+                            <option value="<%=player%>">  
+                        <% } %>
+                    </datalist>
+                </div>
+                <label>Select Purple Cap winner</label>
+                <div class="form-group">
+                    <input class="form-control" list="players" name="purple_cap_winner" required>
+                    <datalist id="players">
+                        <% for(let player of players){ %> 
+                            <option value="<%=player%>">   
+                        <% } %>
+                    </datalist>
+                </div>
+                <button class="btn btn-primary" type="submit">Submit and Get Results</button>
+            </form>
+        </div>
+    <% } %>
 </body>
 </html>

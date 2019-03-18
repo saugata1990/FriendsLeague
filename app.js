@@ -43,6 +43,7 @@ passport.use(new FacebookStrategy({
             user = new User({
                 user_id: profile.id,
                 name: profile.displayName,
+                signup_timestamp: new Date(),
                 avatar_url: profile.photos[0].value
             })
         }
