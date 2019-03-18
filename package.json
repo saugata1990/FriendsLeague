@@ -4,7 +4,8 @@
   "description": "an app for friends",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "node app.js",
+    "start:dev": "nodemon --watch"
   },
   "author": "Saugata Halder",
   "license": "ISC",
