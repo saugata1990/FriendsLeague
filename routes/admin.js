@@ -191,7 +191,7 @@ admin.post('/bonus-results', verifyToken(process.env.admin_secret_key), (req, re
             }
             return user
         })
-        users.map(user => user.save())   
+        return Promise.all([users.map(user => user.save())]) 
         .then(() => res.redirect('/admin/dashboard'))
     })
     .catch(error => res.render('error'))
