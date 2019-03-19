@@ -67,9 +67,9 @@ const create_schedule = (req, res, next) => {
                 if(!match){
                     new Match({
                         match_no: parseInt(row[0]),
-                        start_time,
+                        start_time: new Date(start_time - 330*60000),
                         team1: row[3],
-                        team2: row[4]
+                        team2: row[4] // add another field for date string
                     }).save()
                 }
             })
