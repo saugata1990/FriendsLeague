@@ -59,7 +59,8 @@ const create_schedule = (req, res, next) => {
         })
         schedule_rows.splice(0,1)
         schedule_rows.map(row => {
-            const start_time = date.parse(`${row[0]} ${row[1]}`, 'YYYY/MM/DD HH:mm')
+            const dt = date.parse(`${row[0]} ${row[1]}`, 'YYYY/MM/DD HH:mm')
+            const start_time = new Date(`${dt} GMT+0530`)
             Match.findOne({start_time, team1: row[2], team2: row[3]}).exec()
             .then(match => {
                 if(!match){
