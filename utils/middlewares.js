@@ -68,8 +68,8 @@ const create_schedule = (req, res, next) => {
                     new Match({
                         match_no: parseInt(row[0]),
                         start_time,
-                        team1: row[2],
-                        team2: row[3]
+                        team1: row[3],
+                        team2: row[4]
                     }).save()
                 }
             })
