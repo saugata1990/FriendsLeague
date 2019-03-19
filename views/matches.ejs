@@ -124,16 +124,19 @@
                     <% match_squads.push(...squad.squad) %>    
                 <% } %>
             <% }) %>  -->
-            <%toIST = dateobj => {%>
+            
+            <!-- <%toIST = dateobj => {%>
                 <%dateobj.setHours(date.getHours() + 5)%>
                 <%dateobj.setMinutes(date.getMinutes() + 30)%>
                 <%return dateobj.toLocaleString()%>
-            <%}%>
+            <%}%> -->
+
+            <%console.log('TIME OFFSET  ', date.getTimezoneOffset())%>
 
             <form class="jumbotron" action="/league/prediction" method="POST">
                 <input type="hidden" name="match_id" value="<%= match._id %>">
                 <div class="form-group">
-                    <div><h4>Match <%=match.match_no%>: Starts on <%=toIST(date) %></h4></div>
+                    <div><h4>Match <%=match.match_no%>: Starts on <%=date %></h4></div>
                     <label class="radio-inline" >
                         <input type="radio" name="winner" value="<%= match.team1 %>"><%= match.team1 %>
                     </label>
