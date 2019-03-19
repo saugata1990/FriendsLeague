@@ -19,12 +19,6 @@
                 $("input:checkbox").not(":checked").attr("disabled",bol)
             })
         })
-
-        function toIST (date)  {
-            date.setHours(date.getHours() + 5.5)
-            return date.toLocaleString()
-            
-        }
         
     </script>
     <title>Friends League</title>
@@ -128,6 +122,11 @@
                     <% match_squads.push(...squad.squad) %>    
                 <% } %>
             <% }) %>  -->
+
+            <%toIST = date => {%>
+                <%date.setHours(date.getHours() + 5.5)%>
+                <%return date.toLocaleString()%>
+            <%}%>
 
             <form class="jumbotron" action="/league/prediction" method="POST">
                 <input type="hidden" name="match_id" value="<%= match._id %>">
