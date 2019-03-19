@@ -87,12 +87,12 @@ admin.get('/dashboard', verifyToken(process.env.admin_secret_key), (req, res) =>
                 matches.push(match)
                 if(!seen.includes(match.team1)){
                     const squad1 = teams.find(team => team.name === match.team1)
-                    squads.push({name: squad1.name, squad: squad1.squad})
+                    squads.push(squad1)
                     seen.push(match.team1)
                 }
                 if(!seen.includes(match.team2)){
                     const squad2 = teams.find(team => team.name === match.team2)
-                    squads.push({name: squad2.name, squad: squad2.squad})
+                    squads.push(squad2)
                     seen.push(match.team2)
                 }
             }
