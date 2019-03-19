@@ -123,9 +123,9 @@
                 <% } %>
             <% }) %>  -->
 
-            <%toIST = date => {%>
-                <%date.setHours(date.getHours() + 5.5)%>
-                <%return date.toLocaleString()%>
+            <%toIST = dateobj => {%>
+                <%dateobj.setHours(date.getHours() + 5.5)%>
+                <%return dateobj.toLocaleString()%>
             <%}%>
 
             <form class="jumbotron" action="/league/prediction" method="POST">
