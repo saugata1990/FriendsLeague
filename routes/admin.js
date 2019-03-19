@@ -138,7 +138,7 @@ admin.post('/result/:match_id', verifyToken(process.env.admin_secret_key), (req,
                     points += (prediction.mom==match.mom)? parseInt(process.env.mom_correct_points)
                         : parseInt(process.env.mom_incorrect_points)
                 }
-                if(prediction.first_inns_score){
+                if(prediction.first_inns_score && match.winner != 'No Result'){
                     predicted_score = parseInt(prediction.first_inns_score)
                     points+=evaluate_predicted_score(predicted_score, parseInt(match.first_inns_score))
                 }          
@@ -232,24 +232,24 @@ admin.post('/upload-roster',
 })
 
 
-// admin.get('/test', (req, res) => {
-//     const t = evaluate_predicted_score(req.query.predicted, req.query.actual)
-//     res.send(`<h1>Score: ${t}</h1>`)
-// })
+admin.get('/test', (req, res) => {
+    const t = evaluate_predicted_score(req.query.predicted, req.query.actual)
+    res.send(`<h1>Score: ${t}</h1>`)
+})
 
-// admin.get('/reset-scores', (req, res) => {
-//     User.find().exec()
-//     .then(users => {
-//         users.forEach(user => {
-//             user.score = 0
-//             user.competition_finished = false
-//             return user
-//         })
-//         return Promise.all([users.map(user => user.save())])
-//         .then(()=> res.send('users reset'))
-//     })
-//     .catch(error => res.render('error'))
-// })
+admin.get('/reset-scores', (req, res) => {
+    User.find().exec()
+    .then(users => {
+        users.forEach(user => {
+            user.score = 0
+            user.competition_finished = false
+            return user
+        })
+        return Promise.all([users.map(user => user.save())])
+        .then(()=> res.send('users reset'))
+    })
+    .catch(error => res.render('error'))
+})
 
 
 module.exports = admin
