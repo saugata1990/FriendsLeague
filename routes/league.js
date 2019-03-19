@@ -20,12 +20,17 @@ league.get('/matches', isLoggedIn, (req, res) => {
         const user = profile
         const squads = new Array()
         const seen = new Array()
-        let firstMatchStarted = false
-        if(all_matches.length > 0){
-            if(date.subtract(all_matches[0].start_time, now).toMinutes() < 0){
-                firstMatchStarted = true
+        let firstMatchStarted = false, first_match_time = all_matches[0].start_time
+        all_matches.map(match => {
+            if(date.subtract(match.start_time, first_match_time).toMinutes() < 0){
+                first_match_time = match.start_time
             }
+        })
+       
+        if(date.subtract(first_match_time, now).toMinutes() < 0){
+            firstMatchStarted = true
         }
+        
         
         all_matches.map(match => {
             if(date.subtract(match.start_time, now).toMinutes() > 0 &&
