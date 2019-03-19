@@ -111,7 +111,7 @@ admin.post('/result/:match_id', verifyToken(process.env.admin_secret_key), (req,
     ])
     .then(([match, users]) => {
         match.winner = req.body.winner
-        match.first_inns_score = parseInt(req.body.first_inns_score)
+        match.first_inns_score = req.body.first_inns_score? parseInt(req.body.first_inns_score) : null
         match.mom = req.body.mom
         match.result_updated = true
         users.forEach(user => {
