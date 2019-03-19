@@ -170,13 +170,13 @@ admin.post('/bonus-results', verifyToken(process.env.admin_secret_key), (req, re
             user.competition_finished = true
             let matches_found = 0
             user.bonus_prediction.playoff_teams.sort()
-            console.log('code works before for loop')
+
             for(let i=0; i < user.bonus_prediction.playoff_teams.length; i++){
                 if(user.bonus_prediction.playoff_teams[i] == playoff_teams[i]){
                     matches_found++
                 }
             }
-            console.log('code works after for loop')
+        
             if(matches_found >= 3){
                 user.score += parseInt(process.env.playoff_teams_correct_points)
             }
@@ -234,6 +234,18 @@ admin.get('/test', (req, res) => {
     res.send(`<h1>Score: ${t}</h1>`)
 })
 
+admin.get('/reset-scores', (req, res) => {
+    User.find().exec()
+    .then(users => {
+        users.forEach(user => {
+            user.score = 0
+            user.competition_finished = false
+            return user
+        })
+        users.map(user => user.save()).then(()=> res.send('users reset'))
+    })
+    .catch(error => res.render('error'))
+})
 
 
 module.exports = admin
