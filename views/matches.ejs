@@ -113,6 +113,12 @@
         <% if(matches.length == 0){ %> 
             <div>No matches scheduled</div>    
         <% } %>
+
+        <%toIST = dateobj => {%>
+            <%dateobj.setHours(date.getHours() + 5)%>
+            <%dateobj.setMinutes(date.getMinutes() + 30)%>
+            <%return dateobj.toLocaleString()%>
+        <%}%>
         
         <% matches.forEach(match => { %>
             <% let date = new Date(match.start_time) %>
@@ -123,16 +129,10 @@
                 <% } %>
             <% }) %>  -->
 
-            <%toIST = dateobj => {%>
-                <%dateobj.setHours(date.getHours() + 5)%>
-                <%dateobj.setMinutes(date.getMinutes() + 30)%>
-                <%return dateobj.toLocaleString()%>
-            <%}%>
-
             <form class="jumbotron" action="/league/prediction" method="POST">
                 <input type="hidden" name="match_id" value="<%= match._id %>">
                 <div class="form-group">
-                    <div><h4>Match starts on <%=toIST(date) %></h4></div>
+                    <div><h4>Match #<%=match.match_no%>: Starts on <%=toIST(date) %></h4></div>
                     <label class="radio-inline" >
                         <input type="radio" name="winner" value="<%= match.team1 %>"><%= match.team1 %>
                     </label>

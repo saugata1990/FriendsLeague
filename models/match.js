@@ -5,6 +5,7 @@ mongoose.Promise = global.Promise
 const db = mongoose.createConnection(process.env.mongo_url, { useNewUrlParser: true })
 
 const matchSchema = new Schema({
+    match_no: Number,
     start_time: Date,
     team1: String,
     team2: String,

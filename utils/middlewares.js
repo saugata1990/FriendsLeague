@@ -61,11 +61,12 @@ const create_schedule = (req, res, next) => {
         schedule_rows.map(row => {
             // const dt = date.parse(`${row[0]} ${row[1]}`, 'YYYY/MM/DD HH:mm')
             // const start_time = new Date(`${dt} GMT+0530`)
-            const start_time = date.parse(`${row[0]} ${row[1]}`, 'YYYY/MM/DD HH:mm')
-            Match.findOne({start_time, team1: row[2], team2: row[3]}).exec()
+            const start_time = date.parse(`${row[1]} ${row[2]}`, 'YYYY/MM/DD HH:mm')
+            Match.findOne({start_time, team1: row[3], team2: row[4]}).exec()
             .then(match => {
                 if(!match){
                     new Match({
+                        match_no: parseInt(row[0]),
                         start_time,
                         team1: row[2],
                         team2: row[3]
