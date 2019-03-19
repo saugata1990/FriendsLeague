@@ -117,7 +117,7 @@
         
         
         <% matches.forEach(match => { %>
-            <% let date = new Date(match.start_time) %>
+            <% let date = new Date(match.start_time+330*60000) %>
             <!-- <% let match_squads = [] %>
             <% squads.forEach(squad => { %> 
                 <% if(match.team1 === squad.name || match.team2 === squad.name){ %> 
@@ -135,7 +135,7 @@
             <form class="jumbotron" action="/league/prediction" method="POST">
                 <input type="hidden" name="match_id" value="<%= match._id %>">
                 <div class="form-group">
-                    <div><h4>Match <%=match.match_no%>: Starts on <%=new Date(date+330*60000).toLocaleString() %></h4></div>
+                    <div><h4>Match <%=match.match_no%>: Starts on <%=date.toLocaleString() %></h4></div>
                     <label class="radio-inline" >
                         <input type="radio" name="winner" value="<%= match.team1 %>"><%= match.team1 %>
                     </label>
