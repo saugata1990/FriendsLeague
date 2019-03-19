@@ -188,7 +188,7 @@ admin.post('/bonus-results', verifyToken(process.env.admin_secret_key), (req, re
                 if(user.bonus_prediction.purple_cap_winner == purple_cap_winner){
                     user.score += parseInt(process.env.purple_cap_correct_points)
                 }
-                if(user.bonus_prediction.winner == winner){
+                if(user.bonus_prediction.winning_team == winner){
                     user.score += parseInt(process.env.champion_correct_points)
                 }
             }    
