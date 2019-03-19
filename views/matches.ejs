@@ -117,7 +117,7 @@
         
         
         <% matches.forEach(match => { %>
-            <% let date = new Date(match.start_time+330*60000) %>
+            <% let date = new Date(match.start_time + (330*60000)) %>
             <!-- <% let match_squads = [] %>
             <% squads.forEach(squad => { %> 
                 <% if(match.team1 === squad.name || match.team2 === squad.name){ %> 
