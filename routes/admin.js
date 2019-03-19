@@ -176,16 +176,16 @@ admin.post('/bonus-results', verifyToken(process.env.admin_secret_key), (req, re
                 }
             }
             if(matches_found >= 3){
-                user.score += process.env.playoff_teams_correct_points
+                user.score += parseInt(process.env.playoff_teams_correct_points)
             }
             if(user.bonus_prediction.orange_cap_winner == orange_cap_winner){
-                user.score += process.env.orange_cap_correct_points
+                user.score += parseInt(process.env.orange_cap_correct_points)
             }
             if(user.bonus_prediction.purple_cap_winner == purple_cap_winner){
-                user.score += process.env.purple_cap_correct_points
+                user.score += parseInt(process.env.purple_cap_correct_points)
             }
             if(user.bonus_prediction.winner == winner){
-                user.score += process.env.champion_correct_points
+                user.score += parseInt(process.env.champion_correct_points)
             }
             return user
         })
