@@ -141,6 +141,8 @@
         </form> 
     </div>
     <% if(matches.length == 0 && users.length > 0 && !users[0].competition_finished){ %> 
+        <hr>
+        <hr>
         <div class="container">
             <h2>Assign Bonus Points</h2>
             <form class="jumbotron" action="/admin/bonus-results" method="POST">
