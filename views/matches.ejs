@@ -90,7 +90,7 @@
                     </datalist>
                 </div>
                 <button class="btn btn-primary" type="submit">Submit Prediction</button>
-                <% if(user.bonus_prediction){ %>
+                <% if(user.bonus_prediction.playoff_teams.length>0){ %>
                     <p>You have submitted your predictions. If you post again,
                         your previous post will be overwritten.
                     </p> 
@@ -114,11 +114,7 @@
             <div>No matches scheduled</div>    
         <% } %>
 
-        <%toIST = dateobj => {%>
-            <%dateobj.setHours(dateobj.getHours() + 5)%>
-            <%dateobj.setMinutes(dateobj.getMinutes() + 30)%>
-            <%return dateobj.toLocaleString()%>
-        <%}%>
+        
         
         <% matches.forEach(match => { %>
             <% let date = new Date(match.start_time) %>
@@ -128,6 +124,11 @@
                     <% match_squads.push(...squad.squad) %>    
                 <% } %>
             <% }) %>  -->
+            <%toIST = dateobj => {%>
+                <%dateobj.setHours(date.getHours() + 5)%>
+                <%dateobj.setMinutes(date.getMinutes() + 30)%>
+                <%return dateobj.toLocaleString()%>
+            <%}%>
 
             <form class="jumbotron" action="/league/prediction" method="POST">
                 <input type="hidden" name="match_id" value="<%= match._id %>">
