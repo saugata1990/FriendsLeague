@@ -21,7 +21,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage })
 
-const notifier = require('node-notifier')
 
 
 
@@ -223,11 +222,6 @@ admin.post('/upload-roster',
             verifyToken(process.env.admin_secret_key), 
             upload.single('roster'), 
             create_schedule, (req, res) => {
-    notifier.notify({
-        title: 'Success!',
-        message: 'Roster updated',
-        wait: false
-    }, (err, response) => { })
     res.redirect('/admin/dashboard')
 })
 

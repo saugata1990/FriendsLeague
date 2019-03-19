@@ -61,7 +61,7 @@ const create_schedule = (req, res, next) => {
         schedule_rows.map(row => {
             // const dt = date.parse(`${row[0]} ${row[1]}`, 'YYYY/MM/DD HH:mm')
             // const start_time = new Date(`${dt} GMT+0530`)
-            const start_time = date.parse(`${row[1]} ${row[2]}`, 'YYYY/MM/DD HH:mm')
+            const start_time = new Date(date.parse(`${row[1]} ${row[2]}`, 'YYYY/MM/DD HH:mm') - 330*60000)
             Match.findOne({start_time, match_no:parseInt(row[0]), team1: row[3], team2: row[4]}).exec()
             .then(match => {
                 if(!match){
