@@ -7,6 +7,7 @@ const db = mongoose.createConnection(process.env.mongo_url, { useNewUrlParser: t
 const matchSchema = new Schema({
     match_no: Number,
     start_time: Date,
+    start_time_display: Date, // this is just cosmetic
     team1: String,
     team2: String,
     winner: String,

@@ -117,7 +117,7 @@
         
         
         <% matches.forEach(match => { %>
-            <% let date = new Date(match.start_time + parseInt(330*60000)) %>
+            <% let date = new Date(match.start_time_display) %>
             <!-- <% let match_squads = [] %>
             <% squads.forEach(squad => { %> 
                 <% if(match.team1 === squad.name || match.team2 === squad.name){ %> 
@@ -125,12 +125,7 @@
                 <% } %>
             <% }) %>  -->
             
-            <!-- <%toIST = dateobj => {%>
-                <%dateobj.setHours(date.getHours() + 5)%>
-                <%dateobj.setMinutes(date.getMinutes() + 30)%>
-                <%return dateobj.toLocaleString()%>
-            <%}%> -->
-
+            
 
             <form class="jumbotron" action="/league/prediction" method="POST">
                 <input type="hidden" name="match_id" value="<%= match._id %>">
