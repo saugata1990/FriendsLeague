@@ -100,7 +100,10 @@ admin.get('/dashboard', verifyToken(process.env.admin_secret_key), (req, res) =>
 
         res.render('dashboard', {users, matches, teams, squads, xl_uploaded})
     })
-    .catch(error => res.render('error'))
+    .catch(error => {
+        console.log('error is ', error)
+        res.render('error')
+    })
 })
 
 admin.post('/result/:match_id', verifyToken(process.env.admin_secret_key), (req, res) => {
@@ -226,24 +229,24 @@ admin.post('/upload-roster',
 })
 
 
-admin.get('/test', (req, res) => {
-    const t = evaluate_predicted_score(req.query.predicted, req.query.actual)
-    res.send(`<h1>Score: ${t}</h1>`)
-})
+// admin.get('/test', (req, res) => {
+//     const t = evaluate_predicted_score(req.query.predicted, req.query.actual)
+//     res.send(`<h1>Score: ${t}</h1>`)
+// })
 
-admin.get('/reset-scores', (req, res) => {
-    User.find().exec()
-    .then(users => {
-        users.forEach(user => {
-            user.score = 0
-            user.competition_finished = false
-            return user
-        })
-        return Promise.all([users.map(user => user.save())])
-        .then(()=> res.send('users reset'))
-    })
-    .catch(error => res.render('error'))
-})
+// admin.get('/reset-scores', (req, res) => {
+//     User.find().exec()
+//     .then(users => {
+//         users.forEach(user => {
+//             user.score = 0
+//             user.competition_finished = false
+//             return user
+//         })
+//         return Promise.all([users.map(user => user.save())])
+//         .then(()=> res.send('users reset'))
+//     })
+//     .catch(error => res.render('error'))
+// })
 
 
 module.exports = admin
