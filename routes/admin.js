@@ -242,7 +242,8 @@ admin.get('/reset-scores', (req, res) => {
             user.competition_finished = false
             return user
         })
-        users.map(user => user.save()).then(()=> res.send('users reset'))
+        return Promise.all([users.map(user => user.save())])
+        .then(()=> res.send('users reset'))
     })
     .catch(error => res.render('error'))
 })
