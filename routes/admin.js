@@ -169,26 +169,29 @@ admin.post('/bonus-results', verifyToken(process.env.admin_secret_key), (req, re
         users.forEach(user => {
             user.competition_finished = true
             let matches_found = 0
-            user.bonus_prediction.playoff_teams.sort()
-
-            for(let i=0; i < user.bonus_prediction.playoff_teams.length; i++){
-                if(user.bonus_prediction.playoff_teams[i] == playoff_teams[i]){
-                    matches_found++
+            if(user.bonus_prediction){
+                if(user.bonus_prediction.playoff_teams.length > 0){
+                    user.bonus_prediction.playoff_teams.sort()
+    
+                    for(let i=0; i < user.bonus_prediction.playoff_teams.length; i++){
+                        if(user.bonus_prediction.playoff_teams[i] == playoff_teams[i]){
+                            matches_found++
+                        }
+                    }
                 }
-            }
-        
-            if(matches_found >= 3){
-                user.score += parseInt(process.env.playoff_teams_correct_points)
-            }
-            if(user.bonus_prediction.orange_cap_winner == orange_cap_winner){
-                user.score += parseInt(process.env.orange_cap_correct_points)
-            }
-            if(user.bonus_prediction.purple_cap_winner == purple_cap_winner){
-                user.score += parseInt(process.env.purple_cap_correct_points)
-            }
-            if(user.bonus_prediction.winner == winner){
-                user.score += parseInt(process.env.champion_correct_points)
-            }
+                if(matches_found >= 3){
+                    user.score += parseInt(process.env.playoff_teams_correct_points)
+                }
+                if(user.bonus_prediction.orange_cap_winner == orange_cap_winner){
+                    user.score += parseInt(process.env.orange_cap_correct_points)
+                }
+                if(user.bonus_prediction.purple_cap_winner == purple_cap_winner){
+                    user.score += parseInt(process.env.purple_cap_correct_points)
+                }
+                if(user.bonus_prediction.winner == winner){
+                    user.score += parseInt(process.env.champion_correct_points)
+                }
+            }    
             return user
         })
         return Promise.all([users.map(user => user.save())]) 
