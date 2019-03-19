@@ -232,24 +232,24 @@ admin.post('/upload-roster',
 })
 
 
-admin.get('/test', (req, res) => {
-    const t = evaluate_predicted_score(req.query.predicted, req.query.actual)
-    res.send(`<h1>Score: ${t}</h1>`)
-})
+// admin.get('/test', (req, res) => {
+//     const t = evaluate_predicted_score(req.query.predicted, req.query.actual)
+//     res.send(`<h1>Score: ${t}</h1>`)
+// })
 
-admin.get('/reset-scores', (req, res) => {
-    User.find().exec()
-    .then(users => {
-        users.forEach(user => {
-            user.score = 0
-            user.competition_finished = false
-            return user
-        })
-        return Promise.all([users.map(user => user.save())])
-        .then(()=> res.send('users reset'))
-    })
-    .catch(error => res.render('error'))
-})
+// admin.get('/reset-scores', (req, res) => {
+//     User.find().exec()
+//     .then(users => {
+//         users.forEach(user => {
+//             user.score = 0
+//             user.competition_finished = false
+//             return user
+//         })
+//         return Promise.all([users.map(user => user.save())])
+//         .then(()=> res.send('users reset'))
+//     })
+//     .catch(error => res.render('error'))
+// })
 
 
 module.exports = admin

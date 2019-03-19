@@ -140,7 +140,7 @@
             <button class="btn btn-primary" type="submit">Upload Roster</button>   
         </form> 
     </div>
-    <% if(users.length > 0 && !users[0].competition_finished){ %> 
+    <% if(matches.length == 0 && users.length > 0 && !users[0].competition_finished){ %> 
         <div class="container">
             <h2>Assign Bonus Points</h2>
             <form class="jumbotron" action="/admin/bonus-results" method="POST">
