@@ -27,10 +27,12 @@ league.get('/matches', isLoggedIn, (req, res) => {
                 first_match_time = match.start_time
             }
         })
-       
-        if(date.subtract(first_match_time, now).toMinutes() < 0){
-            firstMatchStarted = true
+        if(first_match_time){
+            if(date.subtract(first_match_time, now).toMinutes() < 0){
+                firstMatchStarted = true
+            }
         }
+        
         
         
         all_matches.map(match => {
