@@ -115,8 +115,8 @@
         <% } %>
 
         <%toIST = dateobj => {%>
-            <%dateobj.setHours(date.getHours() + 5)%>
-            <%dateobj.setMinutes(date.getMinutes() + 30)%>
+            <%dateobj.setHours(dateobj.getHours() + 5)%>
+            <%dateobj.setMinutes(dateobj.getMinutes() + 30)%>
             <%return dateobj.toLocaleString()%>
         <%}%>
         
