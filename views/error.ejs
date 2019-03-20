@@ -1,7 +1,8 @@
 <h1>Oops!!!</h1>
 <h3>Something went wrong.</h3>
 <% let redirectUrl = null %>
-<% if(user == 'admin'){ %> 
+<%=user%>
+<% if(user === 'admin'){ %> 
     <% redirectUrl = '/admin/dashboard' %>    
 <% } else { %> 
     <% redirectUrl = '/league/matches' %>    
