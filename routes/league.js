@@ -32,9 +32,7 @@ league.get('/matches', isLoggedIn, (req, res) => {
                 firstMatchStarted = true
             }
         }
-        
-        
-        
+ 
         all_matches.map(match => {
             if(date.subtract(match.start_time, now).toMinutes() > 0 &&
              date.subtract(match.start_time, now).toDays() <= 4){
@@ -51,6 +49,7 @@ league.get('/matches', isLoggedIn, (req, res) => {
                 }
             }
         })
+        matches.sort((m1, m2) => m1.match_no - m2.match_no)
         res.render('matches', {matches, user, squads, teams, firstMatchStarted})
     })
     .catch(error =>{
