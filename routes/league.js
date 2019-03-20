@@ -35,7 +35,7 @@ league.get('/matches', isLoggedIn, (req, res) => {
  
         all_matches.map(match => {
             if(date.subtract(match.start_time, now).toMinutes() > 0 &&
-             date.subtract(match.start_time, now).toDays() <= 4){
+             date.subtract(match.start_time, now).toDays() <= 2){
                 matches.push(match)
                 if(!seen.includes(match.team1)){
                     const squad1 = teams.find(team => team.name === match.team1)
