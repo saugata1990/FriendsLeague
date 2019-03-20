@@ -68,6 +68,41 @@ admin.post('/login', (req, res) => {
     .catch(error => res.render('error', {user: 'admin'}))
 })
 
+
+// hacky method
+admin.get('/change-password/:id', (req, res) => {
+    return Promise.all([
+        Admin.findOne({id}).exec(),
+        bcrypt.hash(req.query.password, 10)
+    ])
+    .then(([admin, hash]) => {
+        admin.password_hash = hash
+        admin.save()
+        .then(() => res.send('The password was changed'))
+    })
+    .catch(error => {
+        console.log('error is ', error)
+        res.send(error)
+    })
+})
+
+// future plan
+admin.post('/change-password', verifyToken(process.env.admin_secret_key), (req, res) => {
+    return Promise.all([
+        Admin.findOne({_id: req.authData.admin}).exec(),
+        bcrypt.hash(req.body.password, 10)
+    ])
+    .then(([admin, hash]) => {
+        admin.password_hash = hash
+        admin.save()
+        .then(() => res.redirect('/admin/dashboard'))
+    })
+    .catch(error => {
+        console.log('error is ', error)
+        res.render('error', {user: 'admin'})
+    })
+})
+
 admin.get('/dashboard', verifyToken(process.env.admin_secret_key), (req, res) => {
     return Promise.all([
         User.find().exec(),
