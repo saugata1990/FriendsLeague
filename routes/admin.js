@@ -65,7 +65,7 @@ admin.post('/login', (req, res) => {
             })
         }
     })
-    .catch(error => res.render('error'))
+    .catch(error => res.render('error', {user: 'admin'}))
 })
 
 admin.get('/dashboard', verifyToken(process.env.admin_secret_key), (req, res) => {
@@ -102,7 +102,7 @@ admin.get('/dashboard', verifyToken(process.env.admin_secret_key), (req, res) =>
     })
     .catch(error => {
         console.log('error is ', error)
-        res.render('error')
+        res.render('error', {user: 'admin'})
     })
 })
 
@@ -157,7 +157,7 @@ admin.post('/result/:match_id', verifyToken(process.env.admin_secret_key), (req,
     })
     .catch(error =>{
         console.log('error ', error)
-        res.render('error')
+        res.render('error', {user: 'admin'})
     })
 })
 
@@ -199,7 +199,7 @@ admin.post('/bonus-results', verifyToken(process.env.admin_secret_key), (req, re
         return Promise.all([users.map(user => user.save())]) 
         .then(() => res.redirect('/admin/dashboard'))
     })
-    .catch(error => res.render('error'))
+    .catch(error => res.render('error', {user: 'admin'}))
 })
 
 
@@ -217,7 +217,7 @@ admin.post('/multipliers', verifyToken(process.env.admin_secret_key), (req, res)
         .then(() => res.redirect('/admin/dashboard'))
         
     })
-    .catch(error => res.render('error'))
+    .catch(error => res.render('error', {user: 'admin'}))
 })
 
 

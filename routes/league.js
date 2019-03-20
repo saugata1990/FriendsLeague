@@ -55,7 +55,7 @@ league.get('/matches', isLoggedIn, (req, res) => {
     })
     .catch(error =>{
         console.log('the error is ', error)
-        res.render('error')
+        res.render('error', {user: 'player'})
     })
 })
 
@@ -71,7 +71,7 @@ league.post('/bonus-prediction', isLoggedIn, (req, res) => {
         }
         user.save().then(() => res.redirect('/league/matches'))
     })
-    .catch(error => res.render('error'))
+    .catch(error => res.render('error', {user: 'player'}))
 })
 
 
@@ -83,7 +83,7 @@ league.post('/prediction', isLoggedIn, (req, res) => {
     ])
     .then(([match, user]) => {
         if(date.subtract(match.start_time, timestamp).toMinutes() < 0){
-            res.render('error')
+            res.render('error', {user: 'player'})
         }
         const index = user.predictions.map(prediction => prediction.match_id).indexOf(req.body.match_id)
         const prediction = {
@@ -125,7 +125,7 @@ league.post('/prediction', isLoggedIn, (req, res) => {
         user.save()
         .then(() => res.redirect('/league/matches'))
     })
-    .catch(error => res.render('error'))
+    .catch(error => res.render('error', {user: 'player'}))
 })
 
 

@@ -10,7 +10,7 @@ const isLoggedIn = (req, res, next) => {
         next();
     }
     else{
-        res.render('error')
+        res.render('error', {user: 'admin'})
     }
 }
 
@@ -80,7 +80,7 @@ const create_schedule = (req, res, next) => {
     })
     .catch(error => {
         console.log('ERROR ', error)
-        res.status(500).json({error})
+        res.render('error', {user: 'admin'})
     })
 }
 
