@@ -3,7 +3,7 @@
 <% let redirectUrl = null %>
 <% if(user == 'admin'){ %> 
     <% redirectUrl = '/admin/dashboard' %>    
-<% } else {% > 
+<% } else { %> 
     <% redirectUrl = '/league/matches' %>    
-<%} %>
+<% } %>
 <a href="<%=redirectUrl%>">Click here to go back</a>
