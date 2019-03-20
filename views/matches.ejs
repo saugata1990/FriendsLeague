@@ -53,7 +53,7 @@
                 <!-- checkboxes for playoff teams -->
                 <label>Predict the four teams that will qualify for the playoffs</label>
                 <div class="form-group">
-                    <% for(let team of squads){ %> 
+                    <% for(let team of teams){ %> 
                         <div class="form-control-checkbox">
                             <input type="checkbox" name="playoff_teams[]" value="<%= team.name %>" required><%= team.name %>   
                         </div> 
@@ -62,13 +62,13 @@
                 <div class="form-group">
                     <label>Predict which team will win the competition</label>
                     <select class="form-control" name="winning_team">
-                        <% for(let team of squads){ %> 
+                        <% for(let team of teams){ %> 
                             <option value="<%=team.name%>"><%=team.name%></option>    
                         <% } %>
                     </select>
                 </div>
                 <% let players=[] %>
-                <% squads.forEach(squad => { %> 
+                <% teams.forEach(squad => { %> 
                     <% players.push(...squad.squad) %>   
                 <% }) %>
                 <label>Predict Orange Cap winner</label>
