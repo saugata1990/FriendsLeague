@@ -83,7 +83,7 @@ admin.get('/dashboard', verifyToken(process.env.admin_secret_key), (req, res) =>
         rankUsers(users)
         users.map(user => user.save())
         all_matches.map(match => {
-            if(!match.result_updated){  // date.subtract(now, match.start_time).toHours() >= 3 &&   
+            if(date.subtract(now, match.start_time).toHours() >= 3 && !match.result_updated){    
                 matches.push(match)
                 if(!seen.includes(match.team1)){
                     const squad1 = teams.find(team => team.name === match.team1)
