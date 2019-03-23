@@ -118,7 +118,7 @@ const rankUsers = users => {
 
 const evaluate_predicted_score = (predicted_score, actual_score) => {
     const bonus = (predicted_score === actual_score)? parseInt(process.env.score_match_bonus) : 0
-    return parseInt(process.env.score_prediction_points - Math.round(0.05 * (Math.abs(predicted_score - actual_score))) + bonus)
+    return parseInt(process.env.score_prediction_points - Math.round(0.1 * (Math.abs(predicted_score - actual_score))) + bonus)
 }
 
 
