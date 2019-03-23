@@ -84,17 +84,37 @@ const create_schedule = (req, res, next) => {
     })
 }
 
+// rewrite this function to assign ranks by position, not by points
+// const rankUsers_old = (users) => {
+//     const scores = new Set(Object.keys(users).map(key => users[key].score))
+//     const ordered_scores = Array.from(scores).sort((a, b) => b-a)
+//     users.forEach(user => {
+//         user.rank = ordered_scores.indexOf(user.score) + 1
+//         return user
+//     })
+//     users.sort((user1, user2) => user1.rank - user2.rank)
 
-const rankUsers = (users) => {
-    const scores = new Set(Object.keys(users).map(key => users[key].score))
-    const ordered_scores = Array.from(scores).sort((a, b) => b-a)
-    users.forEach(user => {
-        user.rank = ordered_scores.indexOf(user.score) + 1
-        return user
+// }
+
+const rankUsers = users => {
+    users.sort((u1, u2) => u2.score - u1.score)
+    let rank = 0
+    let last_score = null
+    let numUsersWithSameRank = 0
+    users.forEach(user => {   
+        if(user.score == last_score){
+            user.rank = rank
+            numUsersWithSameRank++
+        }
+        else{
+            user.rank = ++rank + numUsersWithSameRank  
+            rank = user.rank
+            numUsersWithSameRank = 0
+        }
+        last_score = user.score
     })
-    users.sort((user1, user2) => user1.rank - user2.rank)
-
 }
+
 
 const evaluate_predicted_score = (predicted_score, actual_score) => {
     const bonus = (predicted_score === actual_score)? parseInt(process.env.score_match_bonus) : 0
