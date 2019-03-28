@@ -24,7 +24,48 @@
     <title>Friends League</title>
 </head>
 <body>
-    
+    <!-- <script>
+        const publicVapidKey =
+         'BIIG0Oi1NBIgPjyUmSH_ZBTK8bpd8wyUWuSIkdUv_Lv-CpBR3yArxjgthid2hXnrubUZVeVjwa0kP6t55uaIIKo'
+
+        if('serviceWorker' in navigator){
+            send().catch(error => console.log(error))
+        }
+
+        async function send(){
+            
+            const register = await navigator.serviceWorker.register('/worker.js', {
+                scope: '/'
+            })
+
+            const subscription = await register.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+            })
+            await fetch('/subscribe', {
+                method: 'POST',
+                body: JSON.stringify(subscription),
+                headers: {
+                    'content-type': 'application/json'
+                }
+            })
+        }
+
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding)
+            .replace(/-/g, '+')
+            .replace(/_/g, '/');
+        
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+        
+            for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }    
+    </script> -->
     <nav class="navbar " style="background:#3b5998; position: fixed; z-index: 50; width: 100%">
         <div class="container">
             <header style="color:ivory; text-align: center"><h1>FRIENDS LEAGUE</h1></header>
