@@ -4,13 +4,19 @@ const app = express()
 const session = require('express-session')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
-const webpush = require('web-push')
+// const webpush = require('web-push')
 const passport = require('passport')
 const FacebookStrategy = require('passport-facebook').Strategy
 const auth = require('./routes/auth')
 const league = require('./routes/league')
 const admin = require('./routes/admin')
+const subscription = require('./routes/subscription')
 const User = require('./models/user')
+
+
+const path = require('path')
+
+app.use(express.static(path.join(__dirname, 'serviceworker')))
 
 app.use(session({
     secret: process.env.session_secret,
@@ -24,7 +30,7 @@ app.use(passport.session());
 app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}))
 app.use(bodyParser.json({limit: '50mb'}))
 
-webpush.setVapidDetails('mailto:saugata1990@gmail.com', process.env.publicVapidKey, process.env.privateVapidKey)
+
 
 passport.serializeUser(function(user, done) {
     done(null, user);
@@ -63,20 +69,14 @@ app.set('view engine', 'ejs')
 app.use('/auth', auth)
 app.use('/league', league)
 app.use('/admin', admin)
+app.use('/subscription', subscription)
 
 
 app.get('/', (req, res) => {
     res.redirect('/auth/facebook-login')
 })
 
-// app.post('/subscribe', (req, res) => {
-//     console.log('route called')
-//     const subscription = req.body
-//     res.status(201).json({})
-//     const payload = JSON.stringify({title: 'Push message'})
-//     // this is to be scheduled...
-//     webpush.sendNotification(subscription, payload).catch(error => console.log(error))
-// })
+
 
 
 
