@@ -13,7 +13,15 @@ subscription.post('/', (req, res) => {
     const schedule = require('node-schedule')
     let match1 = null, match2 = null
     const now = new Date()
+   
     
+    // test
+
+    // test scheduling on heroku
+    schedule.scheduleJob('52 10 * * *', () => {
+        payload = JSON.stringify({title: 'Friends League', body: 'Testing notifications'})
+        webpush.sendNotification(subscription, payload).catch(error => console.log(error))
+    })
 
     // might merge the following 2 blocks into one block
     schedule.scheduleJob('30 9 * * *', () => { 
