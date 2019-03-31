@@ -18,7 +18,7 @@ subscription.post('/', (req, res) => {
     // test
 
     // test scheduling on heroku
-    schedule.scheduleJob('52 10 * * *', () => {
+    schedule.scheduleJob('25 5 * * *', () => {
         payload = JSON.stringify({title: 'Friends League', body: 'Testing notifications'})
         webpush.sendNotification(subscription, payload).catch(error => console.log(error))
     })
