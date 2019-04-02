@@ -10,7 +10,7 @@ const isLoggedIn = (req, res, next) => {
         next();
     }
     else{
-        res.render('error', {user: 'playerrrrrrrrr'})
+        res.render('error', {user: 'player'})
     }
 }
 

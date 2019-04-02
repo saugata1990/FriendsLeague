@@ -19,18 +19,18 @@ const path = require('path')
 
 app.use(express.static(path.join(__dirname, 'serviceworker')))
 
-// app.use(session({
-//     secret: process.env.session_secret,
-//     resave: true,
-//     saveUninitialized: true 
-// }));
-
-app.use(cookieSession({
+app.use(session({
     secret: process.env.session_secret,
-    secure: true
-}))
+    resave: true,
+    saveUninitialized: true 
+}));
 
-// app.use(cookieParser());
+
+// app.use(cookieSession({
+//     secret: process.env.session_secret
+// }))
+
+app.use(cookieParser());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}))
