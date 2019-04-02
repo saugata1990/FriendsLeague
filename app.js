@@ -30,7 +30,7 @@ app.use(cookieSession({
     secure: true
 }))
 
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(bodyParser.urlencoded({extended: true, limit: '50mb'}))
