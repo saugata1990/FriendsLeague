@@ -9,11 +9,12 @@ auth.get('/facebook-login', passport.authenticate('facebook'))
 
 
 auth.get('/facebook/callback', passport.authenticate('facebook',
- { successRedirect: '/league/matches', failureRedirect: '/auth/error', failureFlash: true }));
+ { successRedirect: '/league/matches', failureRedirect: '/auth/failure', failureFlash: true }));
 
 
 
 auth.get('/failure', (req, res) => {
+    console.log('SOME ERROR OCCURED')
     res.render('error')
 })
 
