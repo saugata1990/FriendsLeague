@@ -27,6 +27,7 @@ app.use(express.static(path.join(__dirname, 'serviceworker')))
 
 app.use(cookieSession({
     secret: process.env.session_secret,
+    path: '/league/matches',
     secure: true
 }))
 
