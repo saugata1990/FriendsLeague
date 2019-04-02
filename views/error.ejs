@@ -9,4 +9,6 @@
 <a href="<%=redirectUrl%>">Click here to go back</a>
 
 
-<%=message%>
+<% if(error){ %> 
+    <%= error %>    
+<% } %>
