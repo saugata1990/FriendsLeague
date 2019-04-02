@@ -14,7 +14,6 @@ auth.get('/facebook/callback', passport.authenticate('facebook',
 
 
 auth.get('/failure', (req, res) => {
-    console.log('SOME ERROR OCCURED')
     res.render('error')
 })
 
