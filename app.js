@@ -2,7 +2,7 @@ const express = require('express')
 require('dotenv').config()
 const app = express()
 const session = require('express-session')
-const cookieSession = require('cookie-session')
+const MongoDBStore = require('connect-mongodb-session')(session)
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 // const webpush = require('web-push')
@@ -13,22 +13,23 @@ const league = require('./routes/league')
 const admin = require('./routes/admin')
 const subscription = require('./routes/subscription')
 const User = require('./models/user')
-
-
 const path = require('path')
+
+const store = new MongoDBStore({
+    uri: process.env.mongo_url,
+    collection: 'user_sessions'
+})
 
 app.use(express.static(path.join(__dirname, 'serviceworker')))
 
 app.use(session({
     secret: process.env.session_secret,
+    store: store,
     resave: true,
     saveUninitialized: true 
 }));
 
 
-// app.use(cookieSession({
-//     secret: process.env.session_secret
-// }))
 
 app.use(cookieParser());
 app.use(passport.initialize());
