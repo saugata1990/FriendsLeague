@@ -54,7 +54,8 @@ league.get('/matches', isLoggedIn, (req, res) => {
     })
     .catch(error =>{
         console.log('the error is ', error)
-        res.render('error', {user: 'player'})
+        res.render('test')
+        // res.render('error', {user: 'player'})
     })
 })
 
