@@ -2,6 +2,7 @@ const express = require('express')
 require('dotenv').config()
 const app = express()
 const session = require('express-session')
+const cookieSession = require('cookie-session')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 // const webpush = require('web-push')
@@ -18,11 +19,15 @@ const path = require('path')
 
 app.use(express.static(path.join(__dirname, 'serviceworker')))
 
-app.use(session({
+// app.use(session({
+//     secret: process.env.session_secret,
+//     resave: true,
+//     saveUninitialized: true 
+// }));
+
+app.use(cookieSession({
     secret: process.env.session_secret,
-    resave: true,
-    saveUninitialized: true 
-}));
+}))
 
 app.use(cookieParser());
 app.use(passport.initialize());
