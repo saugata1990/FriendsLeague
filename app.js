@@ -13,6 +13,8 @@ const league = require('./routes/league')
 const admin = require('./routes/admin')
 const subscription = require('./routes/subscription')
 const User = require('./models/user')
+const Subscription = require('./models/push_subscription')
+const { schedule_notifications } = require('./utils/middlewares')
 const path = require('path')
 
 const store = new MongoDBStore({
@@ -84,7 +86,10 @@ app.get('/', (req, res) => {
 })
 
 
-
-
-
-app.listen(process.env.PORT, () => console.log(`listening on port ${process.env.PORT}`))
+app.listen(process.env.PORT, () => {
+    Subscription.find({})
+    .then(subscriptions => {
+        subscriptions.map(subscription => schedule_notifications(subscription.subscription))
+    })
+    console.log(`listening on port ${process.env.PORT}`)
+})

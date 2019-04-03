@@ -3,6 +3,8 @@ const Team = require('../models/team')
 const Match = require('../models/match')
 const readXlsxFile = require('read-excel-file/node')
 const date = require('date-and-time')
+const webpush = require('web-push')
+webpush.setVapidDetails('mailto:saugata1990@gmail.com', process.env.publicVapidKey, process.env.privateVapidKey)
 
 
 const isLoggedIn = (req, res, next) => {
@@ -59,8 +61,6 @@ const create_schedule = (req, res, next) => {
         })
         schedule_rows.splice(0,1)
         schedule_rows.map(row => {
-            // const dt = date.parse(`${row[0]} ${row[1]}`, 'YYYY/MM/DD HH:mm')
-            // const start_time = new Date(`${dt} GMT+0530`)
             const start_time = new Date(date.parse(`${row[1]} ${row[2]}`, 'YYYY/MM/DD HH:mm'))
             Match.findOne({match_no: parseInt(row[0]), team1: row[3], team2: row[4]}).exec()
             .then(match => {
@@ -84,17 +84,6 @@ const create_schedule = (req, res, next) => {
     })
 }
 
-// rewrite this function to assign ranks by position, not by points
-// const rankUsers_old = (users) => {
-//     const scores = new Set(Object.keys(users).map(key => users[key].score))
-//     const ordered_scores = Array.from(scores).sort((a, b) => b-a)
-//     users.forEach(user => {
-//         user.rank = ordered_scores.indexOf(user.score) + 1
-//         return user
-//     })
-//     users.sort((user1, user2) => user1.rank - user2.rank)
-
-// }
 
 const rankUsers = users => {
     users.sort((u1, u2) => u2.score - u1.score)
@@ -122,6 +111,30 @@ const evaluate_predicted_score = (predicted_score, actual_score) => {
 }
 
 
+const schedule_notifications = (subscription) => {
+    let payload = JSON.stringify({title: 'Friends League', body: 'Hello from Friends League'})
+    const schedule = require('node-schedule')
+    const now = new Date()
+    const timeslots = ['30 9 * * *', '30 13 * * *']
+    
+    timeslots.map(slot => {
+        schedule.scheduleJob(slot, () => {  
+            Match.find().exec()
+            .then(matches => {
+                const match = matches.find(match => date.subtract(match.start_time, now).toHours() <= 1
+                 && date.subtract(match.start_time, now).toHours() >= 0)
+                if(match){
+                    const message = 
+                    `Match #${match.match_no}: ${match.team1} vs ${match.team2} is coming up in less than an hour. Have you posted your prediction yet?`
+                    payload = JSON.stringify({title: 'Friends League', body: message})
+                    webpush.sendNotification(subscription, payload).catch(error => console.log(error))
+                } 
+            })         
+        })
+    })
+}
 
 
-module.exports = { isLoggedIn, verifyToken, rankUsers, evaluate_predicted_score, create_schedule }
+
+
+module.exports = { isLoggedIn, verifyToken, rankUsers, evaluate_predicted_score, create_schedule, schedule_notifications }
