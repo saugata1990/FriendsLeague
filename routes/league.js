@@ -39,11 +39,13 @@ league.get('/matches', isLoggedIn, (req, res) => {
                 matches.push(match)
                 if(!seen.includes(match.team1)){
                     const squad1 = teams.find(team => team.name === match.team1)
+                    squad1.squad.sort()
                     squads.push(squad1)
                     seen.push(match.team1)
                 }
                 if(!seen.includes(match.team2)){
                     const squad2 = teams.find(team => team.name === match.team2)
+                    squad2.squad.sort()
                     squads.push(squad2) 
                     seen.push(match.team2)
                 }
