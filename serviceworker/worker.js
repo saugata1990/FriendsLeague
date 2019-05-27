@@ -8,7 +8,7 @@ self.addEventListener('push', e => {
 
 self.addEventListener('notificationclick', e => {
     const notification = e.notification
-    clients.openWindow('https://friends-league.herokuapp.com')
+    clients.openWindow('https://wcpl.herokuapp.com')
     notification.close()
 })
 

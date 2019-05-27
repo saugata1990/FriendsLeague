@@ -149,15 +149,13 @@ const schedule_notifications = (subscription) => {
                     const message = 
                     `Match #${match.match_no}: ${match.team1} vs ${match.team2} is scheduled to begin 
                      shortly. Have you posted your prediction yet?`
-                    payload = JSON.stringify({title: 'Friends League', body: message})
+                    payload = JSON.stringify({title: 'WCPL', body: message})
                     webpush.sendNotification(subscription, payload).catch(error => console.log(error))
                 } 
             })         
         })
     })
 }
-
-
 
 
 module.exports = { isLoggedIn, verifyToken, rankUsers, evaluate_predicted_score, create_schedule, schedule_notifications }
