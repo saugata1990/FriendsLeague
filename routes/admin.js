@@ -8,20 +8,22 @@ const Admin = require('../models/admin')
 const User = require('../models/user')
 const Match = require('../models/match')
 const Team = require('../models/team')
+const Flag = require('../models/flag')
 const multer  = require('multer')
+const fs = require('fs')
+const path = require('path')
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads/')
     },
     filename: (req, file, cb) => {
-        cb(null, 'roster')
+        cb(null, path.parse(file.originalname).name)
     }
 })
 
+
 const upload = multer({ storage })
-
-
 
 
 admin.post('/new', (req, res) => {
@@ -157,7 +159,23 @@ admin.post('/result/:match_id', verifyToken(process.env.admin_secret_key), (req,
             let points = 0
             let multiplier = 1
             const prediction = user.predictions.find(pred => pred.match_id == req.params.match_id)
-            if(!prediction && date.subtract(match.start_time, user.signup_timestamp).toMinutes() > 0 ){ 
+            // if(prediction){
+            //     prediction.actual_winner = match.winner
+            //     prediction.actual_mom = match.mom
+            //     prediction.actual_first_inns_score = match.first_inns_score
+            // }
+            if(match.winner === 'No Result'){
+                if(prediction){
+                    if(prediction.double_used){
+                        user.doubles_remaining++
+                    } else if(prediction.triple_used){
+                        user.triples_remaining++
+                    } else if(prediction.superboost_used){
+                        user.superboosts_remaining++
+                    }
+                } 
+            }
+            else if(!prediction && date.subtract(match.start_time, user.signup_timestamp).toMinutes() > 0 ){ 
                 user.score += parseInt(process.env.no_post_penalty)
             }
             else if(!prediction && date.subtract(match.start_time, user.signup_timestamp).toMinutes() < 0){
@@ -182,6 +200,8 @@ admin.post('/result/:match_id', verifyToken(process.env.admin_secret_key), (req,
                     points+=evaluate_predicted_score(predicted_score, parseInt(match.first_inns_score))
                 }          
                 user.score += parseInt(points) * multiplier
+                // const index = user.predictions.findIndex(prd => prd.match_id == prediction.match_id)
+                // user.predictions[index] = prediction 
             }
             return user
         })
@@ -201,31 +221,35 @@ admin.post('/result/:match_id', verifyToken(process.env.admin_secret_key), (req,
 admin.post('/bonus-results', verifyToken(process.env.admin_secret_key), (req, res) => {
     User.find().exec()
     .then(users => {
-        const playoff_teams = req.body.playoff_teams.sort()
+        const sf_teams = req.body.sf_teams.sort()
         const winner = req.body.winner
-        const orange_cap_winner = req.body.orange_cap_winner
-        const purple_cap_winner = req.body.purple_cap_winner
+        const motm = req.body.motm
+        const highest_run_scorer = req.body.highest_run_scorer
+        const highest_wicket_taker = req.body.highest_wicket_taker
         users.forEach(user => {
             user.competition_finished = true
             let matches_found = 0
             if(user.bonus_prediction){
-                if(user.bonus_prediction.playoff_teams.length > 0){
-                    user.bonus_prediction.playoff_teams.sort()
+                if(user.bonus_prediction.sf_teams.length > 0){
+                    user.bonus_prediction.sf_teams.sort()
     
-                    for(let i=0; i < user.bonus_prediction.playoff_teams.length; i++){
-                        if(user.bonus_prediction.playoff_teams[i] == playoff_teams[i]){
+                    for(let i=0; i < user.bonus_prediction.sf_teams.length; i++){
+                        if(user.bonus_prediction.sf_teams[i] == sf_teams[i]){
                             matches_found++
                         }
                     }
                 }
                 if(matches_found >= 3){
-                    user.score += parseInt(process.env.playoff_teams_correct_points)
+                    user.score += parseInt(process.env.sf_teams_correct_points)
                 }
-                if(user.bonus_prediction.orange_cap_winner == orange_cap_winner){
-                    user.score += parseInt(process.env.orange_cap_correct_points)
+                if(user.bonus_prediction.motm == motm){
+                    user.score += parseInt(process.env.motm_correct_points)
                 }
-                if(user.bonus_prediction.purple_cap_winner == purple_cap_winner){
-                    user.score += parseInt(process.env.purple_cap_correct_points)
+                if(user.bonus_prediction.highest_run_scorer == highest_run_scorer){
+                    user.score += parseInt(process.env.highest_run_scorer_correct_points)
+                }
+                if(user.bonus_prediction.highest_wicket_taker == highest_wicket_taker){
+                    user.score += parseInt(process.env.highest_wicket_taker_correct_points)
                 }
                 if(user.bonus_prediction.winning_team == winner){
                     user.score += parseInt(process.env.champion_correct_points)
@@ -266,24 +290,26 @@ admin.post('/upload-roster',
 })
 
 
-// admin.get('/test', (req, res) => {
-//     const t = evaluate_predicted_score(req.query.predicted, req.query.actual)
-//     res.send(`<h1>Score: ${t}</h1>`)
-// })
+admin.post('/upload-flags', upload.array('flags', 10), (req, res) => { // verifyToken(process.env.admin_secret_key),
+    return Promise.all([
+        Team.find().exec(),
+    ])
+    .then(([teams]) => {
+        return Promise.resolve(
+            teams.map(team => {
+                let flagfile = req.files.find(file => file.filename.toLowerCase() === team.name.toLowerCase())
+                new Flag({
+                    team_name: team.name.toLowerCase(),
+                    flag: {data: fs.readFileSync(flagfile.path).toString('base64'), contentType: 'image/jpg'}
+                }).save()
+            })
+        )
+        .then(() => res.redirect('/admin/dashboard'))
+    })
+    .catch(error => res.render('error', {user: 'admin'}))
+})
 
-// admin.get('/reset-scores', (req, res) => {
-//     User.find().exec()
-//     .then(users => {
-//         users.forEach(user => {
-//             user.score = 0
-//             user.competition_finished = false
-//             return user
-//         })
-//         return Promise.all([users.map(user => user.save())])
-//         .then(()=> res.send('users reset'))
-//     })
-//     .catch(error => res.render('error'))
-// })
+
 
 
 module.exports = admin

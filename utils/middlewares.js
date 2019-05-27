@@ -7,6 +7,9 @@ const webpush = require('web-push')
 webpush.setVapidDetails('mailto:saugata1990@gmail.com', process.env.publicVapidKey, process.env.privateVapidKey)
 
 
+
+
+
 const isLoggedIn = (req, res, next) => {
     if(req.isAuthenticated()){
         next();
@@ -105,9 +108,28 @@ const rankUsers = users => {
 }
 
 
-const evaluate_predicted_score = (predicted_score, actual_score) => {
+const evaluate_predicted_score_v0 = (predicted_score, actual_score) => {
     const bonus = (predicted_score === actual_score)? parseInt(process.env.score_match_bonus) : 0
-    return parseInt(process.env.score_prediction_points - Math.round(0.1 * (Math.abs(predicted_score - actual_score))) + bonus)
+    return parseInt(process.env.score_prediction_points - Math.max(Math.round(0.1 * (Math.abs(predicted_score - actual_score))) + bonus), -5)
+}
+
+const evaluate_predicted_score = (predicted_score, actual_score) => {
+    const diff = parseInt(Math.abs(predicted_score - actual_score))
+    if(predicted_score === actual_score){
+        return 10
+    } else if(diff<=5){
+        return 5
+    } else if(diff<=20){
+        return 3
+    } else if(diff<=30){
+        return 1
+    } else if(diff<=50){
+        return 0
+    } else {
+        const penalty = -(diff - 50) / 10
+        return parseInt(Math.max(penalty, -5))
+    }
+    
 }
 
 

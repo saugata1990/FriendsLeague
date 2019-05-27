@@ -3,23 +3,29 @@ const league = express.Router()
 const date = require('date-and-time')
 const Team = require('../models/team')
 const Match = require('../models/match')
+const Flag = require('../models/flag')
 const User = require('../models/user')
-const { isLoggedIn } = require('../utils/middlewares')
-
+const { isLoggedIn, rankUsers } = require('../utils/middlewares')
 
 
 league.get('/matches', isLoggedIn, (req, res) => {
     return Promise.all([
         Match.find().exec(),
         Team.find().exec(),
-        User.findOne({user_id: req.user.user_id}).exec()
+        Flag.find().exec(),
+        User.findOne({user_id: req.user.user_id}).exec(),
+        User.find({}).exec()
     ])
-    .then(([all_matches, teams, profile]) => {
+    .then(([all_matches, teams, flags, profile, users]) => {
         const now = new Date()
-        const matches = new Array()
+        const upcoming_matches = new Array()
+        const live_matches = new Array()
+        const finished_matches = new Array()
         const user = profile
         const squads = new Array()
         const seen = new Array()
+        rankUsers(users)
+        users.map(user => user.save())
         let firstMatchStarted = false
         let first_match_time = all_matches.length>0 ? all_matches[0].start_time : null
         all_matches.map(match => {
@@ -35,8 +41,8 @@ league.get('/matches', isLoggedIn, (req, res) => {
  
         all_matches.map(match => {
             if(date.subtract(match.start_time, now).toMinutes() >= 0 &&
-             date.subtract(match.start_time, now).toDays() <= 2){
-                matches.push(match)
+             date.subtract(match.start_time, now).toDays() <= 2){  
+                upcoming_matches.push(match)
                 if(!seen.includes(match.team1)){
                     const squad1 = teams.find(team => team.name === match.team1)
                     squad1.squad.sort()
@@ -50,9 +56,17 @@ league.get('/matches', isLoggedIn, (req, res) => {
                     seen.push(match.team2)
                 }
             }
+            else if(date.subtract(match.start_time, now).toMinutes() < 0 && !match.result_updated){
+                live_matches.push(match)
+            }
+            else if(date.subtract(match.start_time, now).toMinutes() < 0 && match.result_updated){
+                finished_matches.push(match)
+            }
         })
-        matches.sort((m1, m2) => m1.match_no - m2.match_no)
-        res.render('matches', {matches, user, squads, teams, firstMatchStarted})
+        upcoming_matches.sort((m1, m2) => m1.match_no - m2.match_no)
+        live_matches.sort((m1, m2) => m1.match_no - m2.match_no)
+        finished_matches.sort((m1, m2) => m2.match_no - m1.match_no)
+        res.render('matches', {upcoming_matches, live_matches, finished_matches, flags, user, users, squads, teams, firstMatchStarted})
     })
     .catch(error =>{
         console.error('the error is ', error)
@@ -65,10 +79,11 @@ league.post('/bonus-prediction', isLoggedIn, (req, res) => {
     User.findOne({user_id: req.user.user_id}).exec()
     .then(user => {
         user.bonus_prediction = {
-            playoff_teams: req.body.playoff_teams,
+            sf_teams: req.body.sf_teams,
             winning_team: req.body.winning_team,
-            orange_cap_winner: req.body.orange_cap_winner,
-            purple_cap_winner: req.body.purple_cap_winner
+            motm: req.body.motm,
+            highest_run_scorer: req.body.highest_run_scorer,
+            highest_wicket_taker: req.body.highest_wicket_taker
         }
         user.save().then(() => res.redirect('/league/matches'))
     })

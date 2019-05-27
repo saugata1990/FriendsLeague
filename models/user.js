@@ -11,10 +11,11 @@ const userSchema = new Schema({
     signup_timestamp: Date,
     rank: Number,
     bonus_prediction: {
-        playoff_teams: [String],
+        sf_teams: [String],
         winning_team: String,
-        orange_cap_winner: String,
-        purple_cap_winner: String
+        motm: String,
+        highest_run_scorer: String,
+        highest_wicket_taker: String
     },
     predictions: [
         {
@@ -25,7 +26,10 @@ const userSchema = new Schema({
             post_timestamp: Date,
             double_used: Boolean,
             triple_used: Boolean,
-            superboost_used: Boolean
+            superboost_used: Boolean,
+            // actual_winner: String,
+            // actual_mom: String,
+            // actual_first_inns_score: Number
         }
     ],
     score: {type: Number, default:  0}, 

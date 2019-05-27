@@ -21,6 +21,15 @@
         })
         
     </script>
+
+    
+    <style>
+        th, td {
+            padding: 10px;
+            border: 1px solid black;
+        }
+    </style>
+    
     <title>Friends League</title>
 </head>
 <body>
@@ -66,7 +75,7 @@
     </script>
     <nav class="navbar " style="background:#3b5998; position: fixed; z-index: 50; width: 100%">
         <div class="container">
-            <header style="color:ivory; text-align: center"><h1>FRIENDS LEAGUE</h1></header>
+            <header style="color:ivory; text-align: center"><h1>WORLD CUP PREDICTION LEAGUE</h1></header>
         </div>
     </nav>
 
@@ -82,24 +91,61 @@
             <h3 style="color:red">Your Rank: <%=user.rank||NA%>,&nbsp;Your Score: <%=user.score%></h3>  
         <% } %>
         
+        <% if(user.competition_finished){ %> 
+            <h2>THE LEAGUE HAS COME TO AN END.</h2>
+            <% const joint_winners = users.filter(usr => usr.rank === 1) %>
+            <% if(user.rank === 1 && joint_winners.length === 1){ %>
+                <h2>Congtatulations!!! You are crowned champion!!!</h2> 
+            <% } else if(user.rank === 1 && joint_winners.length > 1){ %> 
+                <h2>Congratulations!!! You are joint champions with <%=joint_winners.length-1%> others!!!</h2>
+            <% } else if(user.rank <= 3){ %> 
+                <h2>Well done!! You finished on the podium!!! </h2>
+            <% } else { %>
+                <h2>You placed <%= user.rank %>th. Better luck next time!</h2>
+            <% } %>
+        <% } %>
+
+        <%
+        const evaluate_predicted_score = (predicted_score, actual_score) => {
+            const diff = parseInt(Math.abs(predicted_score - actual_score))
+            if(predicted_score === actual_score){
+                return 10
+            } else if(diff<=5){
+                return 5
+            } else if(diff<=20){
+                return 3
+            } else if(diff<=30){
+                return 1
+            } else if(diff<=50){
+                return 0
+            } else {
+                const penalty = -(diff - 50) / 10
+                return parseInt(Math.max(penalty, -5))
+            }  
+        }
+        %>
+
+        
 
         <!-- bonus round code -->
         <% if(!firstMatchStarted && teams.length > 0){ %> 
-                
+            <a href="#_"><h4>Click here to view upcoming matches</h4></a>
             <form class="jumbotron" style="padding-top: 20px" action="/league/bonus-prediction" method="POST">
                 <h3 >Bonus Round(Open until the first match starts)</h3>
                 <hr>
                 <!-- checkboxes for playoff teams -->
-                <label>Predict the four teams that will qualify for the playoffs</label>
+                <label>Predict the four teams that will qualify for the Semi Finals</label>
                 <div class="form-group">
                     <% for(let team of teams){ %> 
                         <div class="form-control-checkbox">
-                            <input type="checkbox" name="playoff_teams[]" value="<%= team.name %>" required><%= team.name %>   
+                            <% const flag = flags.find(flg => flg.team_name === team.name.toLowerCase()) %>
+                            <input type="checkbox" name="sf_teams[]" value="<%= team.name %>" required><%= team.name %> 
+                            <!-- <img src="data:image/jpg;base64,<%= flag.flag.data %>" style="width:25px;height:25px;">   -->
                         </div> 
                     <% } %>
                 </div>
                 <div class="form-group">
-                    <label>Predict which team will win the competition</label>
+                    <label>Predict which team will win the World Cup</label>
                     <select class="form-control" name="winning_team">
                         <% for(let team of teams){ %> 
                             <option value="<%=team.name%>"><%=team.name%></option>    
@@ -110,18 +156,27 @@
                 <% teams.forEach(squad => { %> 
                     <% players.push(...squad.squad) %>   
                 <% }) %>
-                <label>Predict Orange Cap winner</label>
+                <label>Predict Man of the Tournament</label>
                 <div class="form-group">
-                    <input class="form-control" list="players" name="orange_cap_winner" required>
+                    <input class="form-control" list="players" name="motm" required>
                     <datalist id="players">
                         <% for(let player of players){ %> 
                             <option value="<%=player%>">  
                         <% } %>
                     </datalist>
                 </div>
-                <label>Predict Purple Cap winner</label>
+                <label>Predict the highest run getter in the World Cup</label>
                 <div class="form-group">
-                    <input class="form-control" list="players" name="purple_cap_winner" required>
+                    <input class="form-control" list="players" name="highest_run_scorer" required>
+                    <datalist id="players">
+                        <% for(let player of players){ %> 
+                            <option value="<%=player%>">   
+                        <% } %>
+                    </datalist>
+                </div>
+                <label>Predict the highest wicket taker in the World Cup</label>
+                <div class="form-group">
+                    <input class="form-control" list="players" name="highest_wicket_taker" required>
                     <datalist id="players">
                         <% for(let player of players){ %> 
                             <option value="<%=player%>">   
@@ -129,139 +184,325 @@
                     </datalist>
                 </div>
                 <button class="btn btn-primary" type="submit">Submit Prediction</button>
-                <% if(user.bonus_prediction.playoff_teams.length>0){ %>
+                <% if(user.bonus_prediction.sf_teams.length>0){ %>
                     <p>You have submitted your predictions. If you post again,
                         your previous post will be overwritten.
                     </p> 
                     <div style="color:darkgreen">
                         <div>
                             Playoff Teams chosen:   
-                            <% for(let team of user.bonus_prediction.playoff_teams){ %> 
+                            <% for(let team of user.bonus_prediction.sf_teams){ %> 
                                 <%=team%>&nbsp;&nbsp;
                             <% } %>
                         </div>
                         <div>Predicted winning team: <%=user.bonus_prediction.winning_team%></div>
-                        <div>Predicted Orange Cap winner: <%=user.bonus_prediction.orange_cap_winner%></div>
-                        <div>Predicted Purple Cap winner: <%=user.bonus_prediction.purple_cap_winner%></div>
+                        <div>Predicted Man of the Tournament: <%=user.bonus_prediction.motm%></div>
+                        <div>Predicted Highest Run Getter: <%=user.bonus_prediction.highest_run_scorer%></div>
+                        <div>Predicted Highest Wicket Taker: <%=user.bonus_prediction.highest_wicket_taker%></div>
                     </div>
                 <% } %>
             </form>
         <% } %>
         <!-- end of bonus round code -->
         
-        <h3>Matches to predict</h3>
-        <% if(matches.length == 0){ %> 
-            <div>No matches scheduled</div>    
-        <% } %>
-
         
-        
-        <% matches.forEach(match => { %>
-            <% let date = new Date(match.start_time_display) %>
-            <!-- <% let match_squads = [] %>
-            <% squads.forEach(squad => { %> 
-                <% if(match.team1 === squad.name || match.team2 === squad.name){ %> 
-                    <% match_squads.push(...squad.squad) %>    
-                <% } %>
-            <% }) %>  -->
-            
+        <ul id="_" class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#upcoming">Upcoming</a></li>
+            <li><a data-toggle="tab" href="#live">Live</a></li>
+            <li><a data-toggle="tab" href="#finished">Finished</a></li>
+            <li><a data-toggle="tab" href="#leaderboard">Leaderboard</a></li>
+            <li><a data-toggle="tab" href="#rules">Rules</a></li>
+        </ul>
             
 
-            <form class="jumbotron" action="/league/prediction" method="POST">
-                <input type="hidden" name="match_id" value="<%= match._id %>">
-                <div class="form-group">
-                    <div><h4>Match <%=match.match_no%>: Starts on <%=date.toLocaleString() %></h4></div>
-                    <label class="radio-inline" >
-                        <input type="radio" name="winner" value="<%= match.team1 %>"><%= match.team1 %>
-                    </label>
-                    <label>&nbsp;vs&nbsp;</label>
-                    <label class="radio-inline" >
-                        <input type="radio" name="winner" value="<%= match.team2 %>"><%= match.team2 %>
-                    </label>
-                    <label class="radio-inline" >
-                        <input type="radio" name="winner" value="No Result" checked>No Result
-                    </label>
-                </div>
+        <div class="tab-content">
 
-                
-                <!-- <div class="form-group">
-                    <label>Predict Man Of The Match</label>
-                    <input class="form-control" list="match_players" name="mom">
-                    <datalist id="match_players">
-                        <% for(let player of match_squads){ %> 
-                            <option value="<%=player%>">
-                        <% } %>
-                    </datalist>
-                </div> -->
+        <div id="upcoming" class="tab-pane active">    
+            <h3>Upcoming Matches</h3>
+            <% if(upcoming_matches.length == 0){ %> 
+                <div>No matches scheduled</div>    
+            <% } %>
+        
+            
+            <% upcoming_matches.forEach(match => { %>
+                <% let date = new Date(match.start_time_display) %>
+                <% const flag1 = flags.find(flg => flg.team_name === match.team1.toLowerCase()) %>
+                <% const flag2 = flags.find(flg => flg.team_name === match.team2.toLowerCase()) %>
 
-                <div class="form-group">
-                    <label>Predict Man Of The Match</label>
-                    <select class="form-control" name="mom">
-                        <option value=""></option>
-                        <% squads.forEach(squad => { %>
-                            <% if(squad.name === match.team1 || squad.name === match.team2){ %>
-                                <% for(let player of squad.squad){ %> 
-                                    <option value="<%= player %>"><%=player %></option>
+                <form class="jumbotron" action="/league/prediction" method="POST">
+                    <input type="hidden" name="match_id" value="<%= match._id %>">
+                    <div class="form-group">
+                        <div><h4>Match <%=match.match_no%>: Starts on <%=date.toLocaleString() %></h4></div>
+                        <label class="radio-inline" >
+                            <input type="radio" name="winner" value="<%= match.team1 %>" checked>
+                            <img src="data:image/jpg;base64,<%= flag1.flag.data %>" style="width:30px;height:30px;"> 
+                            <%= match.team1 %>
+                        </label>
+                        <label>&nbsp;vs&nbsp;</label>
+                        <label class="radio-inline" >
+                            <input type="radio" name="winner" value="<%= match.team2 %>">
+                            <img src="data:image/jpg;base64,<%= flag2.flag.data %>" style="width:30px;height:30px;">
+                            <%= match.team2 %> 
+                        </label>
+                    </div>
+
+                    
+                    
+                    <div class="form-group">
+                        <label>Predict Man Of The Match</label>
+                        <select class="form-control" name="mom">
+                            <option value=""></option>
+                            <% squads.forEach(squad => { %>
+                                <% if(squad.name === match.team1 || squad.name === match.team2){ %>
+                                    <% for(let player of squad.squad){ %> 
+                                        <option value="<%= player %>"><%=player %></option>
+                                    <% } %>
                                 <% } %>
-                            <% } %>
-                        <% }) %>
-                    </select>
-                </div>
+                            <% }) %>
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <label>Predict first innings score</label>
-                    <input type="number" class="form-control" name="predicted_score">
-                </div>
+                    <div class="form-group">
+                        <label>Predict first innings score</label>
+                        <input type="number" class="form-control" name="predicted_score">
+                    </div>
 
-                <div class="form-group">
-                    <label>Select Multiplier</label>
-                    <select class="form-control" name="multiplier">
-                        <option value="none">No multiplier</option>
-                        <% if(user.doubles_remaining > 0){ %>
-                            <option value="double">Double(<%= user.doubles_remaining %> remaining)</option>
-                        <% } %>
-                        <% if(user.triples_remaining > 0){ %>
-                            <option value="triple">Triple(<%= user.triples_remaining %> remaining)</option>
-                        <% } %>
-                        <% if(user.superboosts_remaining > 0){ %>
-                            <option value="superboost">Superboost(<%= user.superboosts_remaining %> remaining)</option>
-                        <% } %>
-                    </select>
-                </div>
-               
-                <button class="btn btn-primary" type="submit">Submit Prediction</button>
-                <% user.predictions.some((prediction,index) => { %> 
-                    <% if(prediction.match_id == match._id){ %> 
-                        <p>You have already submitted your post for this match. If you post for this match again,
-                             your previous post will be overwritten
-                        </p>
-                        <div style="color:darkgreen">Predicted winner: <%= prediction.winner %></div> 
-                        <% let mom = prediction.mom || 'not predicted' %>
-                        <div style="color:darkgreen">Predicted man of the match: <%= mom %></div>
-                        <% let prdscr = prediction.first_inns_score || 'not predicted' %>
-                        <div style="color:darkgreen">Predicted first innings score: <%= prdscr %></div>
-                        <div style="color:darkgreen">Multiplier: 
-                            <% if(prediction.double_used){ %> 
-                                Double    
-                            <% } else if(prediction.triple_used){ %> 
-                                Triple    
-                            <% } else if(prediction.superboost_used){ %> 
-                                Superboost    
-                            <% } else { %> 
-                                None    
+                    <div class="form-group">
+                        <label>Select Multiplier</label>
+                        <select class="form-control" name="multiplier">
+                            <option value="none">No multiplier</option>
+                            <% if(user.doubles_remaining > 0){ %>
+                                <option value="double">Double(<%= user.doubles_remaining %> remaining)</option>
                             <% } %>
-                        </div>
-                        <% return true %>  
+                            <% if(user.triples_remaining > 0){ %>
+                                <option value="triple">Triple(<%= user.triples_remaining %> remaining)</option>
+                            <% } %>
+                            <% if(user.superboosts_remaining > 0){ %>
+                                <option value="superboost">Superboost(<%= user.superboosts_remaining %> remaining)</option>
+                            <% } %>
+                        </select>
+                    </div>
+                
+                    <button class="btn btn-primary" type="submit">Submit Prediction</button>
+                    <% user.predictions.some((prediction,index) => { %> 
+                        <% if(prediction.match_id == match._id){ %> 
+                            <p>You have submitted your post for this match. If you post for this match again,
+                                your previous post will be overwritten
+                            </p>
+                            <div style="color:darkgreen">Predicted winner: <%= prediction.winner %></div> 
+                            <% let mom = prediction.mom || 'not predicted' %>
+                            <div style="color:darkgreen">Predicted man of the match: <%= mom %></div>
+                            <% let prdscr = prediction.first_inns_score || 'not predicted' %>
+                            <div style="color:darkgreen">Predicted first innings score: <%= prdscr %></div>
+                            <div style="color:darkgreen">Multiplier: 
+                                <% if(prediction.double_used){ %> 
+                                    Double    
+                                <% } else if(prediction.triple_used){ %> 
+                                    Triple    
+                                <% } else if(prediction.superboost_used){ %> 
+                                    Superboost    
+                                <% } else { %> 
+                                    None    
+                                <% } %>
+                            </div>
+                            <% return true %>  
+                        <% } %>
+                        
+                        <% return false %>
+                        
+                    <% }) %> 
+                </form>
+                <hr>
+            <% }) %>
+        </div>
+        
+        <div id="live" class="tab-pane">
+            <h3>Live Matches</h3>
+            <% if(live_matches.length == 0){ %> 
+                <div>No matches in progress</div>    
+            <% } %>
+            <% live_matches.forEach(match => { %> 
+                <% let date = new Date(match.start_time_display) %>
+                <% const flag1 = flags.find(flg => flg.team_name === match.team1.toLowerCase()) %>
+                <% const flag2 = flags.find(flg => flg.team_name === match.team2.toLowerCase()) %>
+                <div><label>Match #<%= match.match_no %>: &nbsp;
+                <img src="data:image/jpg;base64,<%= flag1.flag.data %>" style="width:30px;height:30px;">
+                <%= match.team1 %> vs <img src="data:image/jpg;base64,<%= flag2.flag.data %>" style="width:30px;height:30px;"> 
+                <%= match.team2 %> </label></div>
+                <div>Top Ranked Users' Predictions</div>
+                <table class="jumbotron" style="width: 100%;">
+                    <tr>
+                        <th style="text-align: center">Rank</th>
+                        <th style="text-align: center">User</th> 
+                        <th style="text-align: center">Predicted Winner</th>
+                        <th style="text-align: center">Predicted Man of the Match</th>
+                        <th style="text-align: center">Predicted First Innings Score</th>
+                        <th style="text-align: center">Multiplier</th>
+                    </tr>
+                    <% users.forEach(usr => { %> 
+                        <% if(usr.rank <= 10 || usr.user_id === user.user_id){ %>
+                            <% let prediction = usr.predictions.find(prd => prd.match_id == match._id) %>
+                            <% let multiplier = 'None' %>
+                            <% if(prediction){ %> 
+                                <% if(prediction.double_used){ %> 
+                                    <% multiplier = 'Double' %>    
+                                <% } else if(prediction.triple_used){ %> 
+                                    <% multiplier = 'Triple' %>    
+                                <% } else if(prediction.superboost_used){ %> 
+                                    <% multiplier = 'Superboost' %>    
+                                <%} %>
+                                <tr>
+                                    <td style="text-align: center"><%= usr.rank %></td>
+                                    <td><img src="<%= usr.avatar_url %>">&nbsp;<%= usr.name %></td>
+                                    <td style="text-align: center"><%= prediction.winner %></td>
+                                    <td style="text-align: center"><%= prediction.mom %></td>
+                                    <td style="text-align: center"><%= prediction.first_inns_score %></td>
+                                    <td style="text-align: center"><%= multiplier %></td>
+                                </tr>
+                            <% } %>
+                        <% } %>
+                    <% }) %>
+                </table>
+            <% }) %>
+        </div>
+        
+        <div id="finished" class="tab-pane">
+            <h3>Previous Matches</h3>
+            <% if(finished_matches.length == 0){ %> 
+                <div>Previous Matches will appear here</div>    
+            <% } %>
+            <% finished_matches.forEach(match => { %> 
+                <div class="jumbotron">
+                <% let date = new Date(match.start_time_display) %>
+                <% const flag1 = flags.find(flg => flg.team_name === match.team1.toLowerCase()) %>
+                <% const flag2 = flags.find(flg => flg.team_name === match.team2.toLowerCase()) %>
+                <% let points = 0 %>
+                <div><label>Match #<%= match.match_no %>: &nbsp;
+                <img src="data:image/jpg;base64,<%= flag1.flag.data %>" style="width:30px;height:30px;">
+                <%= match.team1 %> vs <img src="data:image/jpg;base64,<%= flag2.flag.data %>" style="width:30px;height:30px;">
+                <%= match.team2 %> </label></div>  
+                <% let prediction = user.predictions.find(prd => prd.match_id == match._id) %>
+                <% let timedelta = match.start_time - user.signup_timestamp %>
+                <% if(timedelta < 0) { %>
+                    <div>This match took place before you signed up</div>
+                <% }else if(!prediction && match.winner != 'No Result') { %> 
+                    <div>You failed to post for this match and received <%= process.env.no_post_penalty %> points</div>    
+                <% }else if(match.winner === 'No Result'){ %>
+                    <div>Match was abandoned, and hence no points were awarded. Any multipliers used were restored</div> 
+                <% } else { %> 
+                    <p>
+                    <div>Your predicted winner: <%=prediction.winner %></div> 
+                    <div>Actual winner: <%=match.winner%></div>
+                    <% if(prediction.winner === match.winner){ %> 
+                        <% points += parseInt(process.env.winner_correct_points) %>
+                        <div>You received <%= process.env.winner_correct_points %> points for this prediction</div>
+                    <% } else { %> 
+                        <% points += parseInt(process.env.winner_incorrect_points) %>
+                        <div>You received <%= process.env.winner_incorrect_points %> points for this prediction</div>    
                     <% } %>
+                    </p>
+                    <p>
+                    <% if(prediction.mom) { %> 
+                        <div>Your predicted Man of the Match: <%=prediction.mom %></div> 
+                        <div>Actual Man of the Match: <%=match.mom%></div>
+                        <% if(prediction.mom === match.mom){ %> 
+                            <% points += parseInt(process.env.mom_correct_points) %>
+                            <div>You received <%= process.env.mom_correct_points %> points for this prediction</div>
+                        <% } else { %> 
+                            <% points += parseInt(process.env.mom_incorrect_points) %>
+                            <div>You received <%= process.env.mom_incorrect_points %> points for this prediction</div>    
+                        <% } %>
+                    <% } else { %> 
+                        <div>You did not predict Man of the Match for this match</div>    
+                    <% } %>
+                    </p>
+                    <p>
+                    <% if(prediction.first_inns_score){ %> 
+                        <div>Your predicted first innings score: <%=prediction.first_inns_score%></div>
+                        <div>Actual first innings score: <%=match.first_inns_score%></div>
+                        <% let score_pts = evaluate_predicted_score(prediction.first_inns_score, match.first_inns_score)%>
+                        <% points += score_pts %>
+                        <div>You received <%= score_pts %> points for this prediction</div>
+                    <% } else { %> 
+                        <div>You did not predict first innings score for this match</div>    
+                    <% } %>
+                    </p>
+                    <p>
+                    <% let multiplier = 1 %>
+                    <% if(prediction.double_used) { %> 
+                        <% multiplier = 2 %>
+                        <div>You used a Double for this prediction</div>
+                    <% } else if(prediction.triple_used){ %> 
+                        <% multiplier = 3 %>
+                        <div>You used a Triple for this prediction</div>
+                    <% } else if(prediction.superboost_used){ %> 
+                        <% multiplier = 5 %>
+                        <div>You used a Superboost for this prediction</div>
+                    <% } else { %> 
+                        <div>You did not use any multiplier for this prediction</div>
+                    <% } %>
+                    </p>
+                    <div> Your total points for this match is <%=points%> * <%=multiplier%> = <%=points * multiplier%> </div>
                     
-                    <% return false %>
-                    
-                <% }) %> 
-            </form>
-            <hr>
-        <% }) %>
-        
-        
+                <%} %>
+                </div>
+            <% }) %>
+        </div>
+
+        <div id="leaderboard" class="tab-pane">
+            
+            <table class="jumbotron" style="width: 100%;">
+                <caption><h2>Leaderboard</h2></caption>
+                <tr>
+                    <th style="text-align: center">Rank</th>
+                    <th style="text-align: center">User</th> 
+                    <th style="text-align: center">Points</th>
+                </tr>
+                <% users.forEach(usr => { %>
+                    <% if(usr.rank <= 10 || usr.user_id === user.user_id ){ %> 
+                        <tr>
+                            <td style="text-align: center"><%= usr.rank %></td>
+                            <td><img src="<%= usr.avatar_url %>">&nbsp;<%= usr.name %></td>
+                            <td style="text-align: center"><%= usr.score %></td>
+                        </tr>
+                    <% } %> 
+                <% }) %>
+            </table>
+        </div>
+        <div id="rules" class="tab-pane">
+            <div>
+                <h2 style="text-align:center">General Rules</h2>
+                <p>You must submit your prediction for a given match before the scheduled start of play. Since this app 
+                 is automated, there won't be any extra time available for posting predictions even if the start of play is 
+                 delayed by rain or some other factor.</p>
+                <p>If you predict the correct winner for a given match, you get +5, and an incorrect prediction gives 
+                you -2. Not posting leads to -3 points being awarded.</p>
+                <p>For correct Man of the Match prediction, you receive +5, and the penalty for an incorrect prediction
+                  is -1. However, this is optional and you may choose not to predict this one for a given match.</p>
+                <p>You can choose to predict the first innings score for a given match. However this is also optional
+                 and has a greater risk associated with it.<br>If your predicted score is bang-on, your receive +10.<br>
+                 If your prediction differs by 5 runs or less from the eventual score, +5 is awarded.<br> For a 
+                 difference of 20 or less, +3 is awarded. <br> If the difference is 30 or less, +1 is awarded. <br>
+                 For differences greater than 50, negative points are awarded, and a huge difference can lead to a maximum of 
+                 -5 points being awarded. </p>
+                <p>You have a limited number of multipliers(Double, Triple and Superboost) that you can use throughout
+                 the tournament.<br>Double and Triple are self-explanatory, they respectively double or treble the total points
+                 received for a given match, as chosen by the user. Superboost multiplies the score by 5. But beware, in case the 
+                 overall score received for that match is negative, that gets multiplied as well. ;) </p>
+                <p>You can change your predictions for a match as many times as you wish before the match is scheduled 
+                 to begin, however you cannot post or make any changes once it is live.</p>
+                <h2 style="text-align:center">Bonus Round Rules</h2>
+                <p>There are no negative points for this round.</p>
+                <p>Predict 3 out of 4 semifinalists correctly: +10</p>
+                <p>Predict World Cup winners correctly: +20</p>
+                <p>Predict Man of the Tournament correctly: +10</p>
+                <p>Predict Highest Run Scorer correctly(in case of a tie,
+                 the player with the highest batting strike rate is chosen): +5</p>
+                <p>Predict Highest Wicket Taker correctly(in case of a tie, the player with the lowest bowling average is chosen): +5</p>
+            </div>
+        </div>
+        </div>
+        </div>
     </div>
 </body>
 </html>

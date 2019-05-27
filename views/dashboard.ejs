@@ -31,7 +31,7 @@
 
     <nav class="navbar" style="background:#3b5998; position: fixed; z-index: 50; width: 100%">
         <div class="container">
-            <header style="color:ivory; text-align: center"><h1>FRIENDS LEAGUE --Dashboard</h1></header>
+            <header style="color:ivory; text-align: center"><h1>Prediction League</h1></header>
         </div>
     </nav>
 
@@ -50,7 +50,7 @@
                 <tr><td colspan="6" style="text-align: center">No users signed up yet</td></tr>    
             <% } %>
             <% users.forEach(user => { %>
-                <% if(user.rank <= 8){ %> 
+                <% if(user.rank <= 10){ %> 
                     <tr>
                         <td style="text-align: center"><%= user.rank %></td>
                         <td><img src="<%= user.avatar_url %>">&nbsp;<%= user.name %></td>
@@ -69,7 +69,7 @@
             <div>No matches to update</div>    
         <% } %>
         <% matches.forEach(match => { %> 
-            <form class="jumbotron" action="/admin/result/<%=match._id%>" method="POST">
+            <form class="jumbotron" action="/admin/result/<%=match._id%>" method="POST" onSubmit="resultBtn.disabled=true">
                 <div class="form-group">
                     <label>Select Winning Team&nbsp;</label>
                     <label class="radio-inline" >
@@ -100,7 +100,7 @@
                     <label>Enter first innings score</label>
                     <input type="number" class="form-control" name="first_inns_score">
                 </div>
-                <button class="btn btn-primary" type="submit">Submit Results</button>
+                <button class="btn btn-primary" name="resultBtn" type="submit">Submit Results</button>
             </form>    
         <% }) %>
     </div>
@@ -144,12 +144,12 @@
         <hr style="border-top: 2px dashed">
         <div class="container">
             <h2>Assign Bonus Points</h2>
-            <form class="jumbotron" action="/admin/bonus-results" method="POST">
-                <label>Select the four teams that qualified for the playoffs</label>
+            <form class="jumbotron" action="/admin/bonus-results" method="POST" onSubmit="bonusResBtn.disabled=true">
+                <label>Select the four teams that qualified for the Semi Finals</label>
                 <div class="form-group">
                     <% for(let team of teams){ %> 
                         <div class="form-control-checkbox">
-                            <input type="checkbox" name="playoff_teams[]" value="<%= team.name %>" required><%= team.name %>   
+                            <input type="checkbox" name="sf_teams[]" value="<%= team.name %>" required><%= team.name %>   
                         </div> 
                     <% } %>
                 </div>
@@ -165,25 +165,36 @@
                 <% teams.forEach(team => { %> 
                     <% players.push(...team.squad) %>   
                 <% }) %>
-                <label>Select Orange Cap winner</label>
+                <label>Select Man of the Tournament</label>
                 <div class="form-group">
-                    <input class="form-control" list="players" name="orange_cap_winner" required>
+                    <input class="form-control" list="players" name="motm" required>
                     <datalist id="players">
                         <% for(let player of players){ %> 
                             <option value="<%=player%>">  
                         <% } %>
                     </datalist>
                 </div>
-                <label>Select Purple Cap winner</label>
+                <label>Select Highest Run Getter</label>
                 <div class="form-group">
-                    <input class="form-control" list="players" name="purple_cap_winner" required>
+                    <input class="form-control" list="players" name="highest_run_scorer" required>
                     <datalist id="players">
                         <% for(let player of players){ %> 
                             <option value="<%=player%>">   
                         <% } %>
                     </datalist>
                 </div>
-                <button class="btn btn-primary" type="submit">Submit and Get Results</button>
+
+                <label>Select Highest Wicket Taker</label>
+                <div class="form-group">
+                    <input class="form-control" list="players" name="highest_wicket_taker" required>
+                    <datalist id="players">
+                        <% for(let player of players){ %> 
+                            <option value="<%=player%>">   
+                        <% } %>
+                    </datalist>
+                </div>
+
+                <button class="btn btn-primary" name="bonusResBtn" type="submit">Submit and Get Results</button>
             </form>
         </div>
     <% } %>
