@@ -1,7 +1,7 @@
 {
-  "name": "friends-league",
+  "name": "prediction-league",
   "version": "1.0.0",
-  "description": "an app for friends",
+  "description": "users can log in via fb to predict match outcomes and win points",
   "engines": {
     "node": "8.12.0"
   },

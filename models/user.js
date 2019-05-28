@@ -26,10 +26,7 @@ const userSchema = new Schema({
             post_timestamp: Date,
             double_used: Boolean,
             triple_used: Boolean,
-            superboost_used: Boolean,
-            // actual_winner: String,
-            // actual_mom: String,
-            // actual_first_inns_score: Number
+            superboost_used: Boolean
         }
     ],
     score: {type: Number, default:  0}, 

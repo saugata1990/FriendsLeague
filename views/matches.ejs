@@ -384,65 +384,62 @@
                 <% let prediction = user.predictions.find(prd => prd.match_id == match._id) %>
                 <% let timedelta = match.start_time - user.signup_timestamp %>
                 <% if(timedelta < 0) { %>
-                    <div>This match took place before you signed up</div>
+                    <div>Match took place before you signed up</div>
                 <% }else if(!prediction && match.winner != 'No Result') { %> 
-                    <div>You failed to post for this match and received <%= process.env.no_post_penalty %> points</div>    
+                    <div>No post penalty: <%= process.env.no_post_penalty %> </div>    
                 <% }else if(match.winner === 'No Result'){ %>
                     <div>Match was abandoned, and hence no points were awarded. Any multipliers used were restored</div> 
                 <% } else { %> 
                     <p>
-                    <div>Your predicted winner: <%=prediction.winner %></div> 
-                    <div>Actual winner: <%=match.winner%></div>
+                    <div>Predicted / Actual winner: <%=prediction.winner %> / <%=match.winner%></div> 
                     <% if(prediction.winner === match.winner){ %> 
                         <% points += parseInt(process.env.winner_correct_points) %>
-                        <div>You received <%= process.env.winner_correct_points %> points for this prediction</div>
+                        <div>Points received: <%= process.env.winner_correct_points %></div>
                     <% } else { %> 
                         <% points += parseInt(process.env.winner_incorrect_points) %>
-                        <div>You received <%= process.env.winner_incorrect_points %> points for this prediction</div>    
+                        <div>Points received: <%= process.env.winner_incorrect_points %></div>    
                     <% } %>
                     </p>
                     <p>
                     <% if(prediction.mom) { %> 
-                        <div>Your predicted Man of the Match: <%=prediction.mom %></div> 
-                        <div>Actual Man of the Match: <%=match.mom%></div>
+                        <div>Predicted / Actual Man of the Match: <%=prediction.mom %> / <%=match.mom%></div> 
                         <% if(prediction.mom === match.mom){ %> 
                             <% points += parseInt(process.env.mom_correct_points) %>
-                            <div>You received <%= process.env.mom_correct_points %> points for this prediction</div>
+                            <div>Points received: <%= process.env.mom_correct_points %></div>
                         <% } else { %> 
                             <% points += parseInt(process.env.mom_incorrect_points) %>
-                            <div>You received <%= process.env.mom_incorrect_points %> points for this prediction</div>    
+                            <div>Points received: <%= process.env.mom_incorrect_points %></div>    
                         <% } %>
                     <% } else { %> 
-                        <div>You did not predict Man of the Match for this match</div>    
+                        <div>Man of the Match not predicted</div>    
                     <% } %>
                     </p>
                     <p>
                     <% if(prediction.first_inns_score){ %> 
-                        <div>Your predicted first innings score: <%=prediction.first_inns_score%></div>
-                        <div>Actual first innings score: <%=match.first_inns_score%></div>
+                        <div>Predicted / Actual first innings score: <%=prediction.first_inns_score%> / <%=match.first_inns_score%></div>
                         <% let score_pts = evaluate_predicted_score(prediction.first_inns_score, match.first_inns_score)%>
                         <% points += score_pts %>
-                        <div>You received <%= score_pts %> points for this prediction</div>
+                        <div>Points received: <%= score_pts %></div>
                     <% } else { %> 
-                        <div>You did not predict first innings score for this match</div>    
+                        <div>First innings score not predicted</div>    
                     <% } %>
                     </p>
                     <p>
                     <% let multiplier = 1 %>
                     <% if(prediction.double_used) { %> 
                         <% multiplier = 2 %>
-                        <div>You used a Double for this prediction</div>
+                        <div>Multiplier used: Double</div>
                     <% } else if(prediction.triple_used){ %> 
                         <% multiplier = 3 %>
-                        <div>You used a Triple for this prediction</div>
+                        <div>Multiplier used: Triple</div>
                     <% } else if(prediction.superboost_used){ %> 
                         <% multiplier = 5 %>
-                        <div>You used a Superboost for this prediction</div>
+                        <div>Multiplier used: Superboost</div>
                     <% } else { %> 
-                        <div>You did not use any multiplier for this prediction</div>
+                        <div>No Multiplier used</div>
                     <% } %>
                     </p>
-                    <div> Your total points for this match is <%=points%> * <%=multiplier%> = <%=points * multiplier%> </div>
+                    <div> Total points for this match : <%=points%> * <%=multiplier%> = <%=points * multiplier%> </div>
                     
                 <%} %>
                 </div>
@@ -497,8 +494,8 @@
                 <p>Predict World Cup winners correctly: +20</p>
                 <p>Predict Man of the Tournament correctly: +10</p>
                 <p>Predict Highest Run Scorer correctly(in case of a tie,
-                 the player with the highest batting strike rate is chosen): +5</p>
-                <p>Predict Highest Wicket Taker correctly(in case of a tie, the player with the lowest bowling average is chosen): +5</p>
+                 the player with the highest batting strike rate will be chosen): +5</p>
+                <p>Predict Highest Wicket Taker correctly(in case of a tie, the player with the lowest bowling average will be chosen): +5</p>
             </div>
         </div>
         </div>
