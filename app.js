@@ -85,6 +85,9 @@ app.get('/', (req, res) => {
     res.redirect('/auth/facebook-login')
 })
 
+app.get('/test', (req, res) => {
+    res.render('test')
+})
 
 app.listen(process.env.PORT, () => {
     Subscription.find({})
