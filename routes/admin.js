@@ -35,7 +35,10 @@ admin.post('/new', (req, res) => {
         }).save()
         .then(() => res.redirect('/admin'))
     })
-    .catch(error => res.render('error', {user: 'admin'}))
+    .catch(error => {
+        console.log('the error is ', error)
+        res.render('error', {user: 'admin'})
+    })
 })
 
 admin.get('/', (req, res) => {
