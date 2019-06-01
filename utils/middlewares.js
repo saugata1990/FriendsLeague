@@ -147,8 +147,7 @@ const schedule_notifications = (subscription) => {
                  && date.subtract(match.start_time, now).toHours() >= 0)
                 if(match){
                     const message = 
-                    `Match #${match.match_no}: ${match.team1} vs ${match.team2} is scheduled to begin 
-                     shortly. Have you posted your prediction yet?`
+                    `Match #${match.match_no}: ${match.team1} vs ${match.team2} is scheduled to begin shortly. Have you posted your prediction yet?`
                     payload = JSON.stringify({title: 'WCPL', body: message})
                     webpush.sendNotification(subscription, payload).catch(error => console.log(error))
                 } 
